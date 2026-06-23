@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090d" />
+  <title>Free Fire Tournament Admin</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    :root{
+      --bg:#09090d;
+      --panel:rgba(18,18,24,.72);
+      --panel2:rgba(255,255,255,.05);
+      --line:rgba(255,255,255,.08);
+      --text:#f5f7fb;
+      --muted:#a7afc0;
+      --orange:#ff7a18;
+      --orange2:#ff9a3d;
+      --green:#21c17a;
+      --red:#ff5d5d;
+      --blue:#5aa7ff;
+      --shadow:0 18px 45px rgba(0,0,0,.35);
+      --radius:22px;
+      --radius2:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      background:radial-gradient(circle at top,#1c1210 0,#09090d 40%,#050507 100%);
+      color:var(--text);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      min-height:100%;
+    }
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:linear-gradient(120deg,rgba(255,122,24,.08),transparent 35%,rgba(255,255,255,.03));
+      pointer-events:none;
+      z-index:0;
+    }
+    .app{
+      position:relative;
+      z-index:1;
+      max-width:1600px;
+      margin:0 auto;
+      padding:12px;
+    }
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:30;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      margin-bottom:12px;
+      background:rgba(8,8,12,.78);
+      backdrop-filter:blur(18px);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+    }
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:linear-gradient(145deg,var(--orange),#ffb15f);
+      display:grid;
+      place-items:center;
+      color:#111;
+      font-weight:900;
+      box-shadow:0 10px 25px rgba(255,122,24,.35);
+    }
+    .brand h1{font-size:15px;line-height:1.1;margin:0}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .top-actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .pill,.btn,.tab,.navbtn,.iconbtn{border:0;cursor:pointer}
+    .pill{
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+    .btn,.navbtn,.tab,.iconbtn{
+      background:linear-gradient(135deg,rgba(255,122,24,.95),rgba(255,160,70,.95));
+      color:#111;
+      font-weight:800;
+      box-shadow:0 8px 20px rgba(255,122,24,.22);
+      transition:.25s transform,.25s opacity;
+    }
+    .btn:hover,.navbtn:hover,.tab:hover,.iconbtn:hover{transform:translateY(-1px)}
+    .iconbtn{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+    }
+    .layout{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:12px;
+    }
+    .sidebar,.main,.panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      backdrop-filter:blur(18px);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+    }
+    .sidebar{
+      padding:12px;
+      position:sticky;
+      top:82px;
+      height:calc(100dvh - 100px);
+      overflow:auto;
+    }
+    .profile-mini{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      border-radius:18px;
+      background:var(--panel2);
+      border:1px solid var(--line);
+    }
+    .avatar{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      background:linear-gradient(145deg,#333,#111);
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .profile-mini b{display:block;font-size:14px}
+    .profile-mini span,.small{color:var(--muted);font-size:12px}
+    .menu{display:grid;gap:8px;margin-top:12px}
+    .menu button{
+      padding:13px 14px;
+      border-radius:16px;
+      background:transparent;
+      color:var(--text);
+      border:1px solid transparent;
+      text-align:left;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .menu button.active,.menu button:hover{
+      background:rgba(255,122,24,.12);
+      border-color:rgba(255,122,24,.24);
+    }
+    .main{
+      padding:12px;
+      overflow:hidden;
+    }
+    .hero{
+      display:grid;
+      grid-template-columns:1.3fr .9fr;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .card{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+    }
+    .banner{
+      min-height:210px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      background:linear-gradient(145deg,rgba(255,122,24,.24),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1400&q=80') center/cover;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(0,0,0,.45);
+      border:1px solid rgba(255,255,255,.14);
+      width:max-content;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+    .stat h3{margin:0;font-size:22px}
+    .stat p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:12px;
+    }
+    .span-12{grid-column:span 12}
+    .span-8{grid-column:span 8}
+    .span-4{grid-column:span 4}
+    .span-6{grid-column:span 6}
+    .sectionhead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .sectionhead h2{font-size:16px;margin:0}
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .tab{
+      padding:10px 14px;
+      border-radius:999px;
+      color:#111;
+    }
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .input,.select,.textarea{
+      width:100%;
+      padding:13px 14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+    }
+    .textarea{min-height:110px;resize:vertical}
+    .formgrid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+    .tablewrap{
+      overflow:auto;
+      border-radius:18px;
+      border:1px solid var(--line);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+    }
+    th,td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      text-align:left;
+      font-size:13px;
+    }
+    th{
+      color:#ffd7b1;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      background:rgba(255,255,255,.03);
+    }
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .status{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+    }
+    .ok{background:rgba(33,193,122,.15);color:#8ef0bf}
+    .warn{background:rgba(255,122,24,.16);color:#ffcb98}
+    .bad{background:rgba(255,93,93,.14);color:#ffb0b0}
+    .toastwrap{
+      position:fixed;
+      right:14px;
+      bottom:14px;
+      display:grid;
+      gap:10px;
+      z-index:1000;
+    }
+    .toast{
+      min-width:280px;
+      max-width:360px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(10,10,14,.92);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      animation:in .25s ease;
+    }
+    @keyframes in{
+      from{transform:translateY(18px);opacity:.2}
+      to{transform:none;opacity:1}
+    }
+    .skeleton{
+      position:relative;
+      overflow:hidden;
+      background:rgba(255,255,255,.06);
+      border-radius:14px;
+    }
+    .skeleton:after{
+      content:"";
+      position:absolute;
+      inset:0;
+      transform:translateX(-100%);
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+      animation:sh 1.2s infinite;
+    }
+    @keyframes sh{to{transform:translateX(100%)}}
+    .hidden{display:none !important}
+    .authwrap{
+      position:fixed;
+      inset:0;
+      z-index:2000;
+      background:radial-gradient(circle at top,rgba(255,122,24,.12),transparent 40%),rgba(5,5,7,.96);
+      display:grid;
+      place-items:center;
+      padding:16px;
+    }
+    .authbox{
+      width:min(980px,100%);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .authart{
+      min-height:520px;
+      border-radius:28px;
+      background:linear-gradient(145deg,rgba(255,122,24,.24),rgba(0,0,0,.55)),url('https://images.unsplash.com/photo-1546443046-ed1ce6ffd1f4?auto=format&fit=crop&w=1200&q=80') center/cover;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      padding:24px;
+    }
+    .authform{
+      padding:22px;
+      border-radius:28px;
+      background:rgba(16,16,22,.8);
+      border:1px solid var(--line);
+      backdrop-filter:blur(18px);
+    }
+    .authform h2{margin:0 0 6px;font-size:24px}
+    .authform p{margin:0 0 18px;color:var(--muted)}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .footerbar{
+      padding:12px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
+    }
+    .notice{
+      padding:12px 14px;
+      border-radius:18px;
+      background:rgba(255,122,24,.12);
+      border:1px solid rgba(255,122,24,.2);
+    }
+    @media(max-width:1100px){
+      .layout,.hero,.authbox{grid-template-columns:1fr}
+      .sidebar{position:relative;top:auto;height:auto}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .span-8,.span-4,.span-6{grid-column:span 12}
+    }
+    @media(max-width:720px){
+      .topbar{padding:10px}
+      .brand h1{font-size:14px}
+      .stats{grid-template-columns:1fr}
+      .formgrid{grid-template-columns:1fr}
+      .top-actions{width:100%;justify-content:space-between}
+      .banner{min-height:180px}
+    }
+  </style>
+</head>
+<body>
+  <div id="authScreen" class="authwrap">
+    <div class="authbox">
+      <div class="authart">
+        <div class="badge"><span class="material-icons-round">admin_panel_settings</span> Secure Admin Console</div>
+        <h1 style="font-size:38px;margin:14px 0 8px;max-width:10ch">Free Fire Tournament Control Hub</h1>
+        <p style="color:#f5f7fbcc;max-width:50ch;margin:0 0 14px">Tournament, wallet, users, results, notifications, banners, and settings in one realtime panel.</p>
+      </div>
+      <div class="authform">
+        <h2>Admin Login</h2>
+        <p>Firebase Auth + admin role verification.</p>
+        <div class="formgrid">
+          <input id="loginEmail" class="input" type="email" placeholder="Admin email">
+          <input id="loginPassword" class="input" type="password" placeholder="Password">
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="loginBtn"><span class="material-icons-round" style="font-size:18px;vertical-align:middle">login</span> Login</button>
+          <button class="pill" id="resetBtn">Forgot Password</button>
+          <button class="pill" id="verifyBtn">Resend Verification</button>
+        </div>
+        <div class="notice" style="margin-top:14px">After login the panel auto-loads dashboard data, realtime listeners, and admin modules.</div>
+        <div id="authMsg" class="small" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app hidden" id="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">FF</div>
+        <div><h1>Free Fire Admin</h1><p id="adminEmailText">Connected</p></div>
+      </div>
+      <div class="top-actions">
+        <button class="pill" id="themeBtn"><span class="material-icons-round" style="font-size:18px;vertical-align:middle">dark_mode</span> Dark Mode</button>
+        <button class="pill" id="langBtn">Language</button>
+        <button class="pill" id="logoutBtn"><span class="material-icons-round" style="font-size:18px;vertical-align:middle">logout</span> Logout</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="profile-mini">
+          <div class="avatar"><img id="adminPhoto" alt="admin" src="https://i.pravatar.cc/120?img=12"></div>
+          <div><b id="adminName">Admin</b><span id="adminRole">Super Admin</span></div>
+        </div>
+        <div class="menu" id="menu">
+          <button class="active" data-view="dashboard"><span class="material-icons-round">dashboard</span> Dashboard</button>
+          <button data-view="tournaments"><span class="material-icons-round">sports_esports</span> Tournaments</button>
+          <button data-view="registrations"><span class="material-icons-round">groups</span> Registrations</button>
+          <button data-view="results"><span class="material-icons-round">emoji_events</span> Results</button>
+          <button data-view="wallet"><span class="material-icons-round">account_balance_wallet</span> Wallet</button>
+          <button data-view="users"><span class="material-icons-round">person_search</span> Users</button>
+          <button data-view="notifications"><span class="material-icons-round">notifications_active</span> Notifications</button>
+          <button data-view="redeem"><span class="material-icons-round">redeem</span> Redeem Codes</button>
+          <button data-view="referrals"><span class="material-icons-round">diversity_3</span> Referrals</button>
+          <button data-view="banners"><span class="material-icons-round">view_carousel</span> Banners</button>
+          <button data-view="settings"><span class="material-icons-round">settings</span> Settings</button>
+          <button data-view="reports"><span class="material-icons-round">summarize</span> Reports</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="hero">
+          <div class="card banner">
+            <div class="badge"><span class="material-icons-round">flash_on</span> Live tournament operations</div>
+            <div>
+              <h2 style="margin:0 0 6px;font-size:30px">Realtime esports control with wallet automation</h2>
+              <p style="margin:0;color:#fff8">Manage tournaments, users, payments, notifications, rewards, and banners from a single secure dashboard.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="sectionhead"><h2>Live Stats</h2><span class="status ok">Realtime</span></div>
+            <div class="stats" id="stats">
+              <div class="card stat"><h3 id="sUsers">0</h3><p>Total Users</p></div>
+              <div class="card stat"><h3 id="sOnline">0</h3><p>Online Users</p></div>
+              <div class="card stat"><h3 id="sEarnings">₹0</h3><p>Total Earnings</p></div>
+              <div class="card stat"><h3 id="sPending">0</h3><p>Pending Requests</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="card span-12" id="view-dashboard">
+            <div class="sectionhead"><h2>Dashboard Overview</h2><div class="toolbar"><button class="pill">Live Tournament</button><button class="pill">Pending Approvals</button><button class="pill">Revenue Report</button></div></div>
+            <div class="grid">
+              <div class="card span-6"><div class="sectionhead"><h2>App Notice</h2><span class="status warn">Important</span></div><div id="noticeBox" class="notice">Loading latest app notice...</div></div>
+              <div class="card span-6"><div class="sectionhead"><h2>Winner Announcement</h2><span class="status ok">Latest</span></div><div id="winnerBox" class="notice">No winner published yet.</div></div>
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-tournaments">
+            <div class="sectionhead"><h2>Tournament Management</h2><div class="toolbar"><button class="btn" id="openTournamentModal">Create Tournament</button><button class="pill" id="exportTournamentsBtn">Export CSV</button></div></div>
+            <div class="tabs"><button class="tab active" data-tab="upcoming">Upcoming</button><button class="tab" data-tab="live">Live</button><button class="tab" data-tab="completed">Completed</button></div>
+            <div id="tournamentList" class="grid" style="margin-top:12px"></div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-registrations">
+            <div class="sectionhead">
+              <h2>Registration Management</h2>
+              <div class="toolbar">
+                <input id="playerSearch" class="input" style="max-width:320px" placeholder="Search player or UID">
+                <button class="pill" id="exportPlayersBtn">Export CSV</button>
+              </div>
+            </div>
+            <div class="tablewrap">
+              <table>
+                <thead>
+                  <tr><th>Player</th><th>UID</th><th>Match</th><th>Team</th><th>Entry Fee</th><th>Status</th><th>Action</th></tr>
+                </thead>
+                <tbody id="registrationsTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-results">
+            <div class="sectionhead"><h2>Result Management</h2><button class="btn" id="publishResultsBtn">Publish Results</button></div>
+            <div class="formgrid">
+              <input class="input" id="resultTournamentId" placeholder="Tournament ID">
+              <input class="input" id="resultWinnerUid" placeholder="Winner UID">
+              <input class="input" id="resultPosition" placeholder="Position">
+              <input class="input" id="resultKills" placeholder="Kill Points" type="number">
+            </div>
+            <div class="formgrid" style="margin-top:10px">
+              <input class="input" id="resultPrize" placeholder="Prize">
+              <input class="input" id="resultDate" type="date">
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-wallet">
+            <div class="sectionhead"><h2>Wallet Management</h2><div class="toolbar"><button class="pill" id="refreshWalletBtn">Refresh</button></div></div>
+            <div class="grid">
+              <div class="card span-4"><h3>Deposits</h3><div id="depositList"></div></div>
+              <div class="card span-4"><h3>Withdrawals</h3><div id="withdrawList"></div></div>
+              <div class="card span-4">
+                <h3>Manual Balance</h3>
+                <input class="input" id="manualWalletUid" placeholder="User UID" style="margin-bottom:8px">
+                <input class="input" id="manualWalletAmount" type="number" placeholder="Amount" style="margin-bottom:8px">
+                <div class="row">
+                  <button class="btn" id="addBalanceBtn">Add</button>
+                  <button class="pill" id="removeBalanceBtn">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-users">
+            <div class="sectionhead">
+              <h2>User Management</h2>
+              <div class="toolbar">
+                <button class="pill" id="banUserBtn">Ban</button>
+                <button class="pill" id="unbanUserBtn">Unban</button>
+                <button class="pill" id="deleteUserBtn">Delete</button>
+              </div>
+            </div>
+            <div class="formgrid">
+              <input id="userUidInput" class="input" placeholder="User UID">
+              <input id="userNameInput" class="input" placeholder="Edit Name">
+              <input id="userPhoneInput" class="input" placeholder="Mobile Number">
+              <input id="userCountryInput" class="input" placeholder="Country">
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-notifications">
+            <div class="sectionhead"><h2>Notification Panel</h2><button class="btn" id="sendNotificationBtn">Send Push Notification</button></div>
+            <div class="formgrid">
+              <input id="notifTitle" class="input" placeholder="Title">
+              <input id="notifTarget" class="input" placeholder="Target: all / selected / uid">
+              <input id="notifUserId" class="input" placeholder="User UID (optional)">
+              <input id="notifType" class="input" placeholder="Type: banner / push / inapp">
+            </div>
+            <textarea id="notifBody" class="textarea" placeholder="Notification message"></textarea>
+          </div>
+
+          <div class="card span-12 hidden" id="view-redeem">
+            <div class="sectionhead"><h2>Redeem Code Management</h2><button class="btn" id="createRedeemBtn">Create Code</button></div>
+            <div class="formgrid">
+              <input id="redeemCode" class="input" placeholder="Code">
+              <input id="redeemReward" class="input" placeholder="Reward Amount" type="number">
+              <input id="redeemExpiry" class="input" type="date">
+              <input id="redeemLimit" class="input" type="number" placeholder="Usage Limit">
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-referrals">
+            <div class="sectionhead"><h2>Referral Management</h2><button class="pill" id="saveReferralBtn">Save Settings</button></div>
+            <div class="formgrid">
+              <input id="refBonus" class="input" type="number" placeholder="Referral Bonus">
+              <input id="refCondition" class="input" placeholder="Condition">
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-banners">
+            <div class="sectionhead"><h2>Banner Management</h2><button class="btn" id="addBannerBtn">Add Banner</button></div>
+            <div class="formgrid">
+              <input id="bannerTitle" class="input" placeholder="Banner title">
+              <input id="bannerLink" class="input" placeholder="Banner link">
+              <input id="bannerImage" class="input" type="file">
+              <input id="bannerStatus" class="input" placeholder="Active / Inactive">
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-settings">
+            <div class="sectionhead"><h2>App Settings</h2><button class="btn" id="saveSettingsBtn">Save Settings</button></div>
+            <div class="formgrid">
+              <input id="appName" class="input" placeholder="App Name">
+              <input id="upiId" class="input" placeholder="UPI ID">
+              <input id="whatsAppLink" class="input" placeholder="WhatsApp Link">
+              <input id="telegramLink" class="input" placeholder="Telegram Link">
+              <input id="discordLink" class="input" placeholder="Discord Link">
+              <input id="minimumVersion" class="input" placeholder="Minimum Version">
+            </div>
+            <textarea id="privacyPolicy" class="textarea" placeholder="Privacy Policy"></textarea>
+            <textarea id="termsPolicy" class="textarea" placeholder="Terms & Conditions"></textarea>
+          </div>
+
+          <div class="card span-12 hidden" id="view-reports">
+            <div class="sectionhead"><h2>Reports</h2><button class="pill" id="downloadReportsBtn">Generate Reports</button></div>
+            <div class="grid">
+              <div class="card span-4"><h3>Revenue Report</h3><div class="small" id="repRevenue">Ready</div></div>
+              <div class="card span-4"><h3>Tournament Report</h3><div class="small" id="repTournament">Ready</div></div>
+              <div class="card span-4"><h3>User Report</h3><div class="small" id="repUser">Ready</div></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="footerbar">Material Icons • Firebase Auth • Firestore • Storage • FCM • Realtime Listeners</div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toastwrap" id="toastwrap"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPbYOtw_Os9BoslxEEleZ0ruFUlcJM55Q",
+      authDomain: "freefire0001.firebaseapp.com",
+      projectId: "freefire0001",
+      storageBucket: "freefire0001.firebasestorage.app",
+      messagingSenderId: "361979303790",
+      appId: "1:361979303790:web:811d90b32a785435b1d37f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    const messaging = firebase.messaging.isSupported() ? firebase.messaging() : null;
+
+    const S = {
+      user: null,
+      role: "",
+      view: "dashboard",
+      tab: "upcoming",
+      unsub: [],
+      cache: { tournaments: [], regs: [], users: [], deposits: [], withdrawals: [] },
+      settings: {},
+      theme: "dark"
+    };
+
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
+
+    const toast = (m, t = "ok") => {
+      const d = document.createElement("div");
+      d.className = "toast";
+      d.innerHTML = `
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <span class="material-icons-round" style="color:${t === "bad" ? "#ff5d5d" : t === "warn" ? "#ffb86b" : "#21c17a"}">
+            ${t === "bad" ? "error" : t === "warn" ? "warning" : "check_circle"}
+          </span>
+          <div>
+            <b>${t.toUpperCase()}</b>
+            <div style="color:#cdd3e0;font-size:13px">${m}</div>
+          </div>
+        </div>`;
+      $("#toastwrap").appendChild(d);
+      setTimeout(() => d.remove(), 3800);
+    };
+
+    const show = v => {
+      ["dashboard","tournaments","registrations","results","wallet","users","notifications","redeem","referrals","banners","settings","reports"].forEach(x => {
+        $("#view-" + x).classList.toggle("hidden", x !== v);
+      });
+      $$("#menu button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
+      S.view = v;
+    };
+
+    async function isAdmin(u) {
+      const doc = await db.collection("users").doc(u.uid).get();
+      return doc.exists && (doc.data().role === "admin" || doc.data().isAdmin === true);
+    }
+
+    function watch(q, key, cb) {
+      const u = q.onSnapshot(s => {
+        S.cache[key] = s.docs.map(d => ({ id: d.id, ...d.data() }));
+        cb(S.cache[key]);
+      }, e => toast(e.message, "bad"));
+      S.unsub.push(u);
+    }
+
+    function clearWatch() {
+      S.unsub.forEach(x => x());
+      S.unsub = [];
+    }
+
+    async function loadSettings() {
+      const d = await db.collection("settings").doc("app").get();
+      if (d.exists) {
+        S.settings = d.data();
+        $("#noticeBox").textContent = S.settings.notice || "No notice set.";
+        $("#appName").value = S.settings.appName || "";
+        $("#upiId").value = S.settings.upiId || "";
+        $("#whatsAppLink").value = S.settings.whatsAppLink || "";
+        $("#telegramLink").value = S.settings.telegramLink || "";
+        $("#discordLink").value = S.settings.discordLink || "";
+        $("#minimumVersion").value = S.settings.minimumVersion || "";
+        $("#privacyPolicy").value = S.settings.privacyPolicy || "";
+        $("#termsPolicy").value = S.settings.termsPolicy || "";
+        $("#refBonus").value = S.settings.referralBonus || 0;
+        $("#refCondition").value = S.settings.referralCondition || "";
+      }
+    }
+
+    async function loadAll() {
+      clearWatch();
+      await loadSettings();
+
+      watch(db.collection("users"), "users", d => {
+        $("#sUsers").textContent = d.length;
+        $("#sOnline").textContent = d.filter(x => x.online === true).length;
+        renderUsers(d);
+      });
+
+      watch(db.collection("tournaments").orderBy("date", "desc"), "tournaments", renderTournaments);
+      watch(db.collection("registrations").orderBy("createdAt", "desc"), "regs", renderRegs);
+      watch(db.collection("deposits").orderBy("createdAt", "desc").limit(20), "deposits", renderWallet);
+      watch(db.collection("withdrawals").orderBy("createdAt", "desc").limit(20), "withdrawals", renderWallet);
+
+      watch(db.collection("results").orderBy("createdAt", "desc").limit(10), "results", d => {
+        const last = d[0];
+        if (last) $("#winnerBox").textContent = `${last.tournamentName || "Tournament"} winner: ${last.winnerName || last.winnerUid || "N/A"} | Prize: ${last.prize || 0}`;
+      });
+
+      const totals = await Promise.all([
+        db.collection("users").get(),
+        db.collection("walletTransactions").get(),
+        db.collection("deposits").get(),
+        db.collection("withdrawals").get()
+      ]);
+
+      $("#sPending").textContent = (S.cache.deposits.filter(x => x.status === "pending").length + S.cache.withdrawals.filter(x => x.status === "pending").length).toString();
+
+      const earnings = totals[1].docs.reduce((a, b) => a + (Number(b.data().amount) || 0), 0);
+      $("#sEarnings").textContent = "₹" + earnings;
+    }
+
+    function renderUsers(list) {
+      $("#repUser").textContent = `${list.length} users loaded`;
+    }
+
+    function renderTournaments(list) {
+      const tab = S.tab;
+      const arr = list.filter(x => (x.status || "upcoming") === tab);
+      $("#tournamentList").innerHTML = arr.length ? arr.map(t => `
+        <div class="card span-4">
+          <div class="badge"><span class="material-icons-round">sports_esports</span> ${t.status || "upcoming"}</div>
+          <h3 style="margin:10px 0 6px">${t.matchName || "Untitled"}</h3>
+          <div class="small">Entry: ${t.entryFee || 0} | Prize: ${t.prizePool || 0}</div>
+          <div class="small">Slots: ${t.totalSlots || 0} | Left: ${t.remainingSlots ?? t.totalSlots ?? 0}</div>
+          <div class="small">${t.map || ""} • ${t.date || ""} ${t.time || ""}</div>
+          <div class="toolbar" style="margin-top:10px">
+            <button class="pill" onclick="editTournament('${t.id}')">Edit</button>
+            <button class="pill" onclick="duplicateTournament('${t.id}')">Duplicate</button>
+            <button class="pill" onclick="toggleReg('${t.id}',${t.registrationOpen !== false})">${t.registrationOpen !== false ? "Close Reg" : "Open Reg"}</button>
+            <button class="pill" onclick="removeTournament('${t.id}')">Delete</button>
+          </div>
+        </div>`).join("") : '<div class="notice">No tournaments in this tab.</div>';
+    }
+
+    function renderRegs(list) {
+      const q = ($("#playerSearch").value || "").toLowerCase();
+      $("#registrationsTable").innerHTML = list.filter(x => !q || `${x.inGameName || ""} ${x.freeFireUid || ""}`.toLowerCase().includes(q)).map(r => `
+        <tr>
+          <td>${r.inGameName || ""}</td>
+          <td>${r.freeFireUid || ""}</td>
+          <td>${r.tournamentName || r.tournamentId || ""}</td>
+          <td>${r.teamName || "-"}</td>
+          <td>${r.entryFee || 0}</td>
+          <td><span class="status ${r.status === "approved" ? "ok" : r.status === "rejected" ? "bad" : "warn"}">${r.status || "pending"}</span></td>
+          <td><button class="pill" onclick="removeReg('${r.id}','${r.tournamentId || ""}')">Remove</button></td>
+        </tr>`).join("") || '<tr><td colspan="7">No registrations found.</td></tr>';
+    }
+
+    function renderWallet() {
+      $("#depositList").innerHTML = S.cache.deposits.map(d => `
+        <div class="notice" style="margin-bottom:8px">
+          <b>${d.userUid || ""}</b><br>${d.amount || 0} | ${d.status || "pending"}
+          <div class="row" style="margin-top:8px">
+            <button class="pill" onclick="approveDeposit('${d.id}',${d.amount || 0},'${d.userUid || ""}')">Approve</button>
+            <button class="pill" onclick="rejectDeposit('${d.id}')">Reject</button>
+          </div>
+        </div>`).join("") || '<div class="small">No deposits</div>';
+
+      $("#withdrawList").innerHTML = S.cache.withdrawals.map(w => `
+        <div class="notice" style="margin-bottom:8px">
+          <b>${w.userUid || ""}</b><br>${w.amount || 0} | ${w.upiId || ""}
+          <div class="row" style="margin-top:8px">
+            <button class="pill" onclick="approveWithdraw('${w.id}',${w.amount || 0},'${w.userUid || ""}')">Approve</button>
+            <button class="pill" onclick="rejectWithdraw('${w.id}')">Reject</button>
+          </div>
+        </div>`).join("") || '<div class="small">No withdrawals</div>';
+    }
+
+    async function saveSettings() {
+      await db.collection("settings").doc("app").set({
+        appName: $("#appName").value,
+        upiId: $("#upiId").value,
+        whatsAppLink: $("#whatsAppLink").value,
+        telegramLink: $("#telegramLink").value,
+        discordLink: $("#discordLink").value,
+        minimumVersion: $("#minimumVersion").value,
+        privacyPolicy: $("#privacyPolicy").value,
+        termsPolicy: $("#termsPolicy").value,
+        referralBonus: Number($("#refBonus").value || 0),
+        referralCondition: $("#refCondition").value,
+        notice: $("#noticeBox").textContent,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      toast("Settings saved");
+    }
+
+    async function createTournament(data) {
+      await db.collection("tournaments").add({
+        ...data,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        remainingSlots: Number(data.totalSlots || 0),
+        registrationOpen: true,
+        status: data.status || "upcoming"
+      });
+      toast("Tournament created");
+    }
+
+    async function editTournament(id) {
+      const d = await db.collection("tournaments").doc(id).get();
+      if (!d.exists) return;
+      const t = d.data();
+      const name = prompt("Match Name", t.matchName || "");
+      if (name === null) return;
+      await db.collection("tournaments").doc(id).update({
+        matchName: name,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast("Tournament updated");
+    }
+
+    async function duplicateTournament(id) {
+      const d = await db.collection("tournaments").doc(id).get();
+      if (!d.exists) return;
+      const t = d.data();
+      delete t.createdAt;
+      delete t.updatedAt;
+      await db.collection("tournaments").add({
+        ...t,
+        matchName: (t.matchName || "Tournament") + " Copy"
+      });
+      toast("Tournament duplicated");
+    }
+
+    async function removeTournament(id) {
+      if (!confirm("Delete tournament?")) return;
+      await db.collection("tournaments").doc(id).delete();
+      toast("Tournament deleted", "warn");
+    }
+
+    async function toggleReg(id, open) {
+      await db.collection("tournaments").doc(id).update({
+        registrationOpen: !open,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast(open ? "Registration closed" : "Registration opened");
+    }
+
+    async function removeReg(id, tournamentId) {
+      await db.collection("registrations").doc(id).delete();
+      if (tournamentId) {
+        await db.collection("tournaments").doc(tournamentId).update({
+          remainingSlots: firebase.firestore.FieldValue.increment(1)
+        });
+      }
+      toast("Registration removed");
+    }
+
+    async function approveDeposit(id, amount, uidv) {
+      await db.collection("deposits").doc(id).update({
+        status: "approved",
+        approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await db.collection("users").doc(uidv).set({
+        walletBalance: firebase.firestore.FieldValue.increment(amount),
+        totalDeposits: firebase.firestore.FieldValue.increment(amount)
+      }, { merge: true });
+      await db.collection("walletTransactions").add({
+        uid: uidv,
+        type: "deposit",
+        amount,
+        status: "approved",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast("Deposit approved");
+    }
+
+    async function rejectDeposit(id) {
+      await db.collection("deposits").doc(id).update({ status: "rejected" });
+      toast("Deposit rejected", "warn");
+    }
+
+    async function approveWithdraw(id, amount, uidv) {
+      await db.collection("withdrawals").doc(id).update({
+        status: "approved",
+        approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await db.collection("users").doc(uidv).set({
+        walletBalance: firebase.firestore.FieldValue.increment(-amount),
+        totalWithdrawals: firebase.firestore.FieldValue.increment(amount)
+      }, { merge: true });
+      toast("Withdraw approved");
+    }
+
+    async function rejectWithdraw(id) {
+      await db.collection("withdrawals").doc(id).update({ status: "rejected" });
+      toast("Withdraw rejected", "warn");
+    }
+
+    async function addBalance() {
+      const u = $("#manualWalletUid").value.trim(), a = Number($("#manualWalletAmount").value);
+      if (!u || !a) return toast("Enter UID and amount", "warn");
+      await db.collection("users").doc(u).set({
+        walletBalance: firebase.firestore.FieldValue.increment(a)
+      }, { merge: true });
+      await db.collection("walletTransactions").add({
+        uid: u,
+        type: "manual_add",
+        amount: a,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast("Balance added");
+    }
+
+    async function removeBalance() {
+      const u = $("#manualWalletUid").value.trim(), a = Number($("#manualWalletAmount").value);
+      if (!u || !a) return toast("Enter UID and amount", "warn");
+      await db.collection("users").doc(u).set({
+        walletBalance: firebase.firestore.FieldValue.increment(-a)
+      }, { merge: true });
+      await db.collection("walletTransactions").add({
+        uid: u,
+        type: "manual_remove",
+        amount: a,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast("Balance removed", "warn");
+    }
+
+    async function sendNotification() {
+      const d = {
+        title: $("#notifTitle").value,
+        body: $("#notifBody").value,
+        target: $("#notifTarget").value,
+        userId: $("#notifUserId").value,
+        type: $("#notifType").value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection("notifications").add(d);
+      toast("Notification queued");
+    }
+
+    async function createRedeem() {
+      const code = $("#redeemCode").value.trim();
+      if (!code) return toast("Enter redeem code", "warn");
+      await db.collection("redeemCodes").doc(code).set({
+        reward: Number($("#redeemReward").value || 0),
+        expiry: $("#redeemExpiry").value,
+        usageLimit: Number($("#redeemLimit").value || 1),
+        active: true,
+        usedBy: []
+      });
+      toast("Redeem code created");
+    }
+
+    async function saveReferral() {
+      await db.collection("settings").doc("app").set({
+        referralBonus: Number($("#refBonus").value || 0),
+        referralCondition: $("#refCondition").value
+      }, { merge: true });
+      toast("Referral settings saved");
+    }
+
+    async function addBanner() {
+      const f = $("#bannerImage").files[0];
+      let url = "";
+      if (f) {
+        const ref = storage.ref("banners/" + Date.now() + "_" + f.name);
+        await ref.put(f);
+        url = await ref.getDownloadURL();
+      }
+      await db.collection("banners").add({
+        title: $("#bannerTitle").value,
+        link: $("#bannerLink").value,
+        image: url,
+        status: $("#bannerStatus").value || "active",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast("Banner added");
+    }
+
+    function csvDownload(name, rows) {
+      const csv = [Object.keys(rows[0] || {}).join(",")]
+        .concat(rows.map(r => Object.values(r).map(v => '"' + String(v ?? "").replace(/"/g, '""') + '"').join(",")))
+        .join("
+");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+      a.download = name;
+      a.click();
+    }
+
+    async function publishResults() {
+      const d = {
+        tournamentId: $("#resultTournamentId").value,
+        winnerUid: $("#resultWinnerUid").value,
+        position: $("#resultPosition").value,
+        kills: Number($("#resultKills").value || 0),
+        prize: Number($("#resultPrize").value || 0),
+        date: $("#resultDate").value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection("results").add(d);
+      if (d.winnerUid && d.prize) {
+        await db.collection("users").doc(d.winnerUid).set({
+          walletBalance: firebase.firestore.FieldValue.increment(d.prize),
+          totalWins: firebase.firestore.FieldValue.increment(1),
+          totalEarnings: firebase.firestore.FieldValue.increment(d.prize)
+        }, { merge: true });
+      }
+      toast("Results published");
+    }
+
+    async function banUser() {
+      const u = $("#userUidInput").value.trim();
+      if (!u) return toast("Enter UID", "warn");
+      await db.collection("users").doc(u).set({ banned: true }, { merge: true });
+      toast("User banned", "warn");
+    }
+
+    async function unbanUser() {
+      const u = $("#userUidInput").value.trim();
+      if (!u) return toast("Enter UID", "warn");
+      await db.collection("users").doc(u).set({ banned: false }, { merge: true });
+      toast("User unbanned");
+    }
+
+    async function deleteUser() {
+      const u = $("#userUidInput").value.trim();
+      if (!u) return toast("Enter UID", "warn");
+      if (!confirm("Delete user profile data?")) return;
+      await db.collection("users").doc(u).delete();
+      toast("User deleted", "warn");
+    }
+
+    async function downloadReports() {
+      csvDownload("users.csv", S.cache.users);
+      csvDownload("tournaments.csv", S.cache.tournaments);
+      csvDownload("registrations.csv", S.cache.regs);
+      toast("Reports generated");
+    }
+
+    async function ensureAuth() {
+      return new Promise(res => auth.onAuthStateChanged(async u => {
+        if (!u) {
+          $("#authScreen").classList.remove("hidden");
+          $("#app").classList.add("hidden");
+          return res(null);
+        }
+        if (!u.emailVerified) {
+          $("#authMsg").textContent = "Email not verified. Verification required.";
+          $("#authScreen").classList.remove("hidden");
+          $("#app").classList.add("hidden");
+          return res(null);
+        }
+        const ok = await isAdmin(u);
+        if (!ok) {
+          $("#authMsg").textContent = "Access denied: admin only.";
+          await auth.signOut();
+          return res(null);
+        }
+        S.user = u;
+        $("#adminEmailText").textContent = u.email;
+        $("#authScreen").classList.add("hidden");
+        $("#app").classList.remove("hidden");
+        $("#adminName").textContent = u.displayName || u.email.split("@")[0];
+        loadAll();
+        res(u);
+      }));
+    }
+
+    async function login() {
+      const e = $("#loginEmail").value.trim(), p = $("#loginPassword").value;
+      try {
+        await auth.signInWithEmailAndPassword(e, p);
+        toast("Login successful");
+      } catch (err) {
+        $("#authMsg").textContent = err.message;
+        toast(err.message, "bad");
+      }
+    }
+
+    async function forgot() {
+      const e = $("#loginEmail").value.trim();
+      if (!e) return toast("Enter email first", "warn");
+      await auth.sendPasswordResetEmail(e);
+      toast("Password reset sent");
+    }
+
+    async function resendVerify() {
+      const u = auth.currentUser;
+      if (!u) return;
+      await u.sendEmailVerification();
+      toast("Verification email sent");
+    }
+
+    $("#menu").addEventListener("click", e => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      show(b.dataset.view);
+    });
+
+    $$(".tab").forEach(b => b.onclick = () => {
+      $$(".tab").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      S.tab = b.dataset.tab;
+      renderTournaments(S.cache.tournaments);
+    });
+
+    $("#loginBtn").onclick = login;
+    $("#resetBtn").onclick = forgot;
+    $("#verifyBtn").onclick = resendVerify;
+    $("#logoutBtn").onclick = () => auth.signOut();
+    $("#themeBtn").onclick = () => toast("Dark mode is default and optimized");
+    $("#langBtn").onclick = () => toast("Language settings can be saved in Firestore");
+    $("#openTournamentModal").onclick = () => {
+      const matchName = prompt("Match Name");
+      if (!matchName) return;
+      const entryFee = Number(prompt("Entry Fee") || 0);
+      const prizePool = Number(prompt("Prize Pool") || 0);
+      const totalSlots = Number(prompt("Total Slots") || 0);
+      createTournament({ matchName, entryFee, prizePool, totalSlots, status: "upcoming" });
+    };
+    $("#exportTournamentsBtn").onclick = () => csvDownload("tournaments.csv", S.cache.tournaments);
+    $("#exportPlayersBtn").onclick = () => csvDownload("registrations.csv", S.cache.regs);
+    $("#refreshWalletBtn").onclick = loadAll;
+    $("#addBalanceBtn").onclick = addBalance;
+    $("#removeBalanceBtn").onclick = removeBalance;
+    $("#sendNotificationBtn").onclick = sendNotification;
+    $("#createRedeemBtn").onclick = createRedeem;
+    $("#saveReferralBtn").onclick = saveReferral;
+    $("#addBannerBtn").onclick = addBanner;
+    $("#saveSettingsBtn").onclick = saveSettings;
+    $("#publishResultsBtn").onclick = publishResults;
+    $("#banUserBtn").onclick = banUser;
+    $("#unbanUserBtn").onclick = unbanUser;
+    $("#deleteUserBtn").onclick = deleteUser;
+    $("#downloadReportsBtn").onclick = downloadReports;
+    $("#playerSearch").oninput = () => renderRegs(S.cache.regs);
+
+    ensureAuth();
+  </script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090d" />
+  <title>Free Fire Tournament</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    :root{
+      --bg:#09090d;--panel:rgba(18,18,24,.72);--panel2:rgba(255,255,255,.05);--line:rgba(255,255,255,.08);
+      --text:#f5f7fb;--muted:#a7afc0;--orange:#ff7a18;--orange2:#ff9a3d;--green:#21c17a;--red:#ff5d5d;
+      --shadow:0 18px 45px rgba(0,0,0,.35);--radius:22px
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:0;min-height:100%;background:radial-gradient(circle at top,#1c1210 0,#09090d 40%,#050507 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}
+    body:before{content:"";position:fixed;inset:0;background:linear-gradient(120deg,rgba(255,122,24,.08),transparent 35%,rgba(255,255,255,.03));pointer-events:none;z-index:0}
+    .app{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:12px}
+    .topbar,.sidebar,.main,.card,.modal,.toast{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:var(--shadow);border-radius:var(--radius)}
+    .topbar{position:sticky;top:0;z-index:40;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;margin-bottom:12px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--orange),#ffb15f);display:grid;place-items:center;color:#111;font-weight:900}
+    .brand h1{margin:0;font-size:15px}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .pill,.btn,.tab,.navbtn,.iconbtn{border:0;cursor:pointer}
+    .pill{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line)}
+    .btn,.tab,.navbtn,.iconbtn{background:linear-gradient(135deg,rgba(255,122,24,.95),rgba(255,160,70,.95));color:#111;font-weight:800;box-shadow:0 8px 20px rgba(255,122,24,.22);transition:.25s transform}
+    .btn:hover,.tab:hover,.navbtn:hover,.iconbtn:hover{transform:translateY(-1px)}
+    .iconbtn{width:42px;height:42px;border-radius:14px;display:grid;place-items:center}
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:12px}
+    .sidebar{padding:12px;position:sticky;top:82px;height:calc(100dvh - 100px);overflow:auto}
+    .profile-mini{display:flex;gap:12px;align-items:center;padding:12px;border-radius:18px;background:var(--panel2);border:1px solid var(--line)}
+    .avatar{width:54px;height:54px;border-radius:18px;overflow:hidden;background:linear-gradient(145deg,#333,#111);display:grid;place-items:center}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .profile-mini b{display:block;font-size:14px}.small,.profile-mini span{color:var(--muted);font-size:12px}
+    .menu{display:grid;gap:8px;margin-top:12px}.menu button{padding:13px 14px;border-radius:16px;background:transparent;color:var(--text);border:1px solid transparent;text-align:left;display:flex;gap:10px;align-items:center}
+    .menu button.active,.menu button:hover{background:rgba(255,122,24,.12);border-color:rgba(255,122,24,.24)}
+    .main{padding:12px;overflow:hidden}
+    .hero{display:grid;grid-template-columns:1.3fr .9fr;gap:12px;margin-bottom:12px}
+    .card{background:rgba(255,255,255,.04);border-radius:22px;padding:14px}
+    .banner{min-height:220px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(145deg,rgba(255,122,24,.24),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1400&q=80') center/cover}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14);width:max-content}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .stat h3{margin:0;font-size:22px}.stat p{margin:4px 0 0;color:var(--muted);font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-4{grid-column:span 4}.span-6{grid-column:span 6}
+    .sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.sectionhead h2{font-size:16px;margin:0}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}.tab{padding:10px 14px;border-radius:999px;color:#111}
+    .input,.textarea,.select{width:100%;padding:13px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);outline:none}
+    .textarea{min-height:110px;resize:vertical}
+    .formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .tablewrap{overflow:auto;border-radius:18px;border:1px solid var(--line)}
+    table{width:100%;border-collapse:collapse;min-width:900px} th,td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:13px} th{color:#ffd7b1;font-size:12px;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.03)}
+    .status{padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}.ok{background:rgba(33,193,122,.15);color:#8ef0bf}.warn{background:rgba(255,122,24,.16);color:#ffcb98}.bad{background:rgba(255,93,93,.14);color:#ffb0b0}
+    .toastwrap{position:fixed;right:14px;bottom:14px;display:grid;gap:10px;z-index:1000}.toast{min-width:280px;max-width:360px;padding:12px 14px;border-radius:16px;background:rgba(10,10,14,.92);border:1px solid var(--line);box-shadow:var(--shadow)}
+    .hidden{display:none !important}.notice{padding:12px 14px;border-radius:18px;background:rgba(255,122,24,.12);border:1px solid rgba(255,122,24,.2)}
+    .authwrap{position:fixed;inset:0;z-index:2000;background:radial-gradient(circle at top,rgba(255,122,24,.12),transparent 40%),rgba(5,5,7,.96);display:grid;place-items:center;padding:16px}
+    .authbox{width:min(980px,100%);display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .authart{min-height:520px;border-radius:28px;background:linear-gradient(145deg,rgba(255,122,24,.24),rgba(0,0,0,.55)),url('https://images.unsplash.com/photo-1546443046-ed1ce6ffd1f4?auto=format&fit=crop&w=1200&q=80') center/cover;display:flex;flex-direction:column;justify-content:flex-end;padding:24px}
+    .authform{padding:22px;border-radius:28px;background:rgba(16,16,22,.8);border:1px solid var(--line);backdrop-filter:blur(18px)}
+    .authform h2{margin:0 0 6px;font-size:24px}.authform p{margin:0 0 18px;color:var(--muted)}
+    .footerbar{padding:12px;color:var(--muted);font-size:12px;text-align:center}
+    @media(max-width:1100px){.layout,.hero,.authbox{grid-template-columns:1fr}.sidebar{position:relative;top:auto;height:auto}.stats{grid-template-columns:repeat(2,1fr)}.span-8,.span-4,.span-6{grid-column:span 12}}
+    @media(max-width:720px){.stats{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.top-actions{width:100%;justify-content:space-between}.banner{min-height:180px}}
+  </style>
+</head>
+<body>
+  <div id="authScreen" class="authwrap">
+    <div class="authbox">
+      <div class="authart">
+        <div class="badge"><span class="material-icons-round">sports_esports</span> Free Fire Tournament</div>
+        <h1 style="font-size:38px;margin:14px 0 8px;max-width:10ch">Play. Register. Win.</h1>
+        <p style="color:#f5f7fbcc;max-width:45ch;margin:0 0 14px">Join tournaments, manage your wallet, claim rewards, and track your match history in a premium gaming panel.</p>
+      </div>
+      <div class="authform">
+        <h2>Account Access</h2>
+        <p>Login, register, verify email, or recover password.</p>
+        <div class="tabs">
+          <button class="tab active" id="showLogin">Login</button>
+          <button class="tab" id="showRegister">Register</button>
+        </div>
+        <div id="loginBox" style="margin-top:12px">
+          <div class="formgrid">
+            <input id="loginEmail" class="input" type="email" placeholder="Email">
+            <input id="loginPassword" class="input" type="password" placeholder="Password">
+          </div>
+          <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn" id="loginBtn"><span class="material-icons-round" style="font-size:18px;vertical-align:middle">login</span> Login</button>
+            <button class="pill" id="forgotBtn">Forgot Password</button>
+            <button class="pill" id="verifyBtn">Resend Verification</button>
+          </div>
+        </div>
+        <div id="registerBox" class="hidden" style="margin-top:12px">
+          <div class="formgrid">
+            <input id="regName" class="input" placeholder="Username">
+            <input id="regEmail" class="input" type="email" placeholder="Email">
+            <input id="regPhone" class="input" placeholder="Mobile Number">
+            <input id="regCountry" class="input" placeholder="Country">
+            <input id="regPassword" class="input" type="password" placeholder="Password">
+            <input id="regReferral" class="input" placeholder="Referral Code (optional)">
+          </div>
+          <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn" id="registerBtn">Create Account</button>
+            <button class="pill" id="autoLoginHint">Auto Login</button>
+          </div>
+        </div>
+        <div id="authMsg" class="small" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app hidden" id="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">FF</div>
+        <div><h1 id="appTitle">Free Fire Tournament</h1><p id="userHint">User Panel</p></div>
+      </div>
+      <div class="top-actions">
+        <button class="pill" id="themeBtn"><span class="material-icons-round" style="font-size:18px;vertical-align:middle">dark_mode</span> Dark Mode</button>
+        <button class="pill" id="langBtn">Language</button>
+        <button class="pill" id="logoutBtn"><span class="material-icons-round" style="font-size:18px;vertical-align:middle">logout</span> Logout</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="profile-mini">
+          <div class="avatar"><img id="profilePhoto" src="https://i.pravatar.cc/120?img=15" alt="profile"></div>
+          <div>
+            <b id="profileName">Player</b>
+            <span id="profileUid">UID</span>
+          </div>
+        </div>
+        <div class="menu" id="menu">
+          <button class="active" data-view="home"><span class="material-icons-round">home</span> Home</button>
+          <button data-view="profile"><span class="material-icons-round">person</span> Profile</button>
+          <button data-view="tournaments"><span class="material-icons-round">sports_esports</span> Tournaments</button>
+          <button data-view="wallet"><span class="material-icons-round">account_balance_wallet</span> Wallet</button>
+          <button data-view="history"><span class="material-icons-round">history</span> Match History</button>
+          <button data-view="notifications"><span class="material-icons-round">notifications</span> Notifications</button>
+          <button data-view="support"><span class="material-icons-round">support_agent</span> Support</button>
+          <button data-view="settings"><span class="material-icons-round">settings</span> Settings</button>
+          <button data-view="policy"><span class="material-icons-round">gavel</span> Policy</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="hero">
+          <div class="card banner">
+            <div class="badge"><span class="material-icons-round">flash_on</span> Live Tournament Badge</div>
+            <div>
+              <h2 style="margin:0 0 6px;font-size:30px">Join Free Fire tournaments with realtime slots</h2>
+              <p style="margin:0;color:#fff8">Premium esports experience with wallet, redeem code, referral, and match history.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="sectionhead"><h2>Wallet Summary</h2><span class="status ok">Live</span></div>
+            <div class="stats">
+              <div class="card stat"><h3 id="wBal">₹0</h3><p>Current Balance</p></div>
+              <div class="card stat"><h3 id="bBal">₹0</h3><p>Bonus Balance</p></div>
+              <div class="card stat"><h3 id="eBal">₹0</h3><p>Referral Earnings</p></div>
+              <div class="card stat"><h3 id="mCnt">0</h3><p>Total Matches</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="card span-12" id="view-home">
+            <div class="sectionhead"><h2>Home</h2><span class="status warn">Premium Gaming UI</span></div>
+            <div class="grid">
+              <div class="card span-6"><div class="sectionhead"><h2>Banner Slider</h2><span class="small">Realtime</span></div><div id="bannerSlider" class="notice">Loading banners...</div></div>
+              <div class="card span-6"><div class="sectionhead"><h2>App Notice</h2><span class="small">Latest</span></div><div id="noticeBox" class="notice">Loading notice...</div></div>
+              <div class="card span-6"><div class="sectionhead"><h2>Upcoming Tournament</h2></div><div id="upcomingBox" class="notice">Loading upcoming tournament...</div></div>
+              <div class="card span-6"><div class="sectionhead"><h2>Winner Announcement</h2></div><div id="winnerBox" class="notice">No winner yet.</div></div>
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-profile">
+            <div class="sectionhead"><h2>Profile</h2><button class="btn" id="saveProfileBtn">Save Profile</button></div>
+            <div class="formgrid">
+              <input id="pUsername" class="input" placeholder="Username">
+              <input id="pUid" class="input" placeholder="Free Fire UID">
+              <input id="pIGN" class="input" placeholder="In Game Name">
+              <input id="pMobile" class="input" placeholder="Mobile Number">
+              <input id="pEmail" class="input" placeholder="Email" disabled>
+              <input id="pCountry" class="input" placeholder="Country">
+              <input id="pReferral" class="input" placeholder="Referral Code" disabled>
+              <input id="pPhoto" class="input" type="file" accept="image/*">
+            </div>
+            <div class="grid" style="margin-top:12px">
+              <div class="card span-3"><h3 id="pWallet">₹0</h3><p class="small">Wallet Balance</p></div>
+              <div class="card span-3"><h3 id="pMatches">0</h3><p class="small">Total Matches</p></div>
+              <div class="card span-3"><h3 id="pWins">0</h3><p class="small">Total Wins</p></div>
+              <div class="card span-3"><h3 id="pEarnings">₹0</h3><p class="small">Total Earnings</p></div>
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-tournaments">
+            <div class="sectionhead"><h2>Tournament List</h2><div class="tabs"><button class="tab active" data-tab="upcoming">Upcoming</button><button class="tab" data-tab="live">Live</button><button class="tab" data-tab="completed">Completed</button></div></div>
+            <div id="tournamentList" class="grid" style="margin-top:12px"></div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-wallet">
+            <div class="sectionhead"><h2>Wallet</h2></div>
+            <div class="grid">
+              <div class="card span-4"><h3>Deposit</h3><input id="depAmount" class="input" type="number" placeholder="Amount" style="margin-bottom:8px"><input id="depUTR" class="input" placeholder="UPI Transaction ID (UTR)" style="margin-bottom:8px"><input id="depFile" class="input" type="file" accept="image/*" style="margin-bottom:8px"><button class="btn" id="depositBtn">Submit Deposit</button></div>
+              <div class="card span-4"><h3>Withdraw</h3><input id="wdAmount" class="input" type="number" placeholder="Amount" style="margin-bottom:8px"><input id="wdUPI" class="input" placeholder="UPI ID" style="margin-bottom:8px"><button class="btn" id="withdrawBtn">Request Withdraw</button></div>
+              <div class="card span-4"><h3>Redeem Code</h3><input id="redeemCode" class="input" placeholder="Enter Code" style="margin-bottom:8px"><button class="btn" id="redeemBtn">Redeem</button><div class="small" style="margin-top:8px">Instant wallet reward if valid.</div></div>
+            </div>
+            <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody id="txnTable"></tbody></table></div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-history">
+            <div class="sectionhead"><h2>Match History</h2></div>
+            <div class="tablewrap"><table><thead><tr><th>Match</th><th>Position</th><th>Kill Points</th><th>Prize Won</th><th>Date</th></tr></thead><tbody id="historyTable"></tbody></table></div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-notifications">
+            <div class="sectionhead"><h2>Realtime Notifications</h2></div>
+            <div id="notifList"></div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-support">
+            <div class="sectionhead"><h2>Support</h2></div>
+            <div class="grid">
+              <div class="card span-4"><button class="btn" id="tgBtn">Telegram</button></div>
+              <div class="card span-4"><button class="btn" id="waBtn">WhatsApp</button></div>
+              <div class="card span-4"><button class="btn" id="dcBtn">Discord</button></div>
+              <div class="card span-12"><textarea id="contactMsg" class="textarea" placeholder="Contact form message"></textarea><button class="btn" id="contactBtn">Send Contact Message</button></div>
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-settings">
+            <div class="sectionhead"><h2>Settings</h2><button class="btn" id="saveSettingsBtn">Save</button></div>
+            <div class="grid">
+              <div class="card span-6"><h3>Options</h3><div class="row" style="display:flex;gap:8px;flex-wrap:wrap"><button class="pill" id="darkModeBtn">Dark Mode</button><button class="pill" id="privacyBtn">Privacy Policy</button><button class="pill" id="termsBtn">Terms</button><button class="pill" id="aboutBtn">About</button></div></div>
+              <div class="card span-6"><h3>Language</h3><input id="langInput" class="input" placeholder="en / hi / ..."></div>
+            </div>
+          </div>
+
+          <div class="card span-12 hidden" id="view-policy">
+            <div class="sectionhead"><h2>Policy Pages</h2></div>
+            <div class="grid">
+              <div class="card span-6"><h3>Privacy Policy</h3><div id="privacyBox" class="notice">Loading...</div></div>
+              <div class="card span-6"><h3>Terms & Conditions</h3><div id="termsBox" class="notice">Loading...</div></div>
+              <div class="card span-12"><h3>About</h3><div id="aboutBox" class="notice">Loading...</div></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="footerbar">Firebase Auth • Firestore • Storage • Realtime listeners • FCM-ready</div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toastwrap" id="toastwrap"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPbYOtw_Os9BoslxEEleZ0ruFUlcJM55Q",
+      authDomain: "freefire0001.firebaseapp.com",
+      projectId: "freefire0001",
+      storageBucket: "freefire0001.firebasestorage.app",
+      messagingSenderId: "361979303790",
+      appId: "1:361979303790:web:811d90b32a785435b1d37f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth=firebase.auth(),db=firebase.firestore(),storage=firebase.storage(),messaging=firebase.messaging.isSupported()?firebase.messaging():null;
+    const S={user:null,view:"home",tab:"upcoming",unsub:[],cache:{tournaments:[],regs:[],wallet:[],notifs:[],banners:[]}};
+    const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+    const toast=(m,t="ok")=>{const d=document.createElement("div");d.className="toast";d.innerHTML=`<div style="display:flex;gap:10px;align-items:flex-start"><span class="material-icons-round" style="color:${t==="bad"?"#ff5d5d":t==="warn"?"#ffb86b":"#21c17a"}">${t==="bad"?"error":t==="warn"?"warning":"check_circle"}</span><div><b>${t.toUpperCase()}</b><div style="color:#cdd3e0;font-size:13px">${m}</div></div></div>`;$("#toastwrap").appendChild(d);setTimeout(()=>d.remove(),3500)};
+    const show=v=>{["home","profile","tournaments","wallet","history","notifications","support","settings","policy"].forEach(x=>$("#view-"+x).classList.toggle("hidden",x!==v));$$('#menu button').forEach(b=>b.classList.toggle("active",b.dataset.view===v));S.view=v};
+    const watch=(q,key,cb)=>{const u=q.onSnapshot(s=>{S.cache[key]=s.docs.map(d=>({id:d.id,...d.data()}));cb(S.cache[key])},e=>toast(e.message,"bad"));S.unsub.push(u)};
+    const uid=()=>auth.currentUser&&auth.currentUser.uid;
+    async function loadUserProfile(){
+      const doc=await db.collection("users").doc(uid()).get();
+      const u=doc.exists?doc.data():{};
+      $("#profileName").textContent=u.username||auth.currentUser.displayName||"Player";
+      $("#profileUid").textContent=u.freeFireUid||uid();
+      $("#wBal").textContent="₹"+(u.walletBalance||0);
+      $("#bBal").textContent="₹"+(u.bonusBalance||0);
+      $("#eBal").textContent="₹"+(u.referralEarnings||0);
+      $("#mCnt").textContent=u.totalMatches||0;
+      $("#pUsername").value=u.username||"";
+      $("#pUid").value=u.freeFireUid||"";
+      $("#pIGN").value=u.inGameName||"";
+      $("#pMobile").value=u.mobileNumber||"";
+      $("#pEmail").value=auth.currentUser.email||"";
+      $("#pCountry").value=u.country||"";
+      $("#pReferral").value=u.referralCode||"";
+      $("#pWallet").textContent="₹"+(u.walletBalance||0);
+      $("#pMatches").textContent=u.totalMatches||0;
+      $("#pWins").textContent=u.totalWins||0;
+      $("#pEarnings").textContent="₹"+(u.totalEarnings||0);
+      if(u.photoURL) $("#profilePhoto").src=u.photoURL;
+    }
+    async function loadAll(){
+      S.unsub.forEach(x=>x());S.unsub=[];
+      await loadUserProfile();
+      const settings=(await db.collection("settings").doc("app").get()).data()||{};
+      $("#appTitle").textContent=settings.appName||"Free Fire Tournament";
+      $("#noticeBox").textContent=settings.notice||"Welcome to the tournament app.";
+      $("#privacyBox").textContent=settings.privacyPolicy||"";
+      $("#termsBox").textContent=settings.termsPolicy||"";
+      $("#aboutBox").textContent=settings.about||"Free Fire tournament platform.";
+      $("#tgBtn").onclick=()=>settings.telegramLink&&window.open(settings.telegramLink,"_blank");
+      $("#waBtn").onclick=()=>settings.whatsAppLink&&window.open(settings.whatsAppLink,"_blank");
+      $("#dcBtn").onclick=()=>settings.discordLink&&window.open(settings.discordLink,"_blank");
+      $("#upcomingBox").textContent="Loading upcoming tournament...";
+      watch(db.collection("banners").where("status","==","active"),"banners",d=>{$("#bannerSlider").innerHTML=d.length?d.map(b=>`<div class="notice" style="margin-bottom:8px"><b>${b.title||"Banner"}</b><div class="small">${b.link||""}</div></div>`).join(""):"No banners available";});
+      watch(db.collection("notifications").where("target","in",["all",uid()]).orderBy("createdAt","desc").limit(20),"notifs",d=>{$("#notifList").innerHTML=d.length?d.map(n=>`<div class="notice" style="margin-bottom:8px"><b>${n.title||""}</b><div class="small">${n.body||""}</div></div>`).join(""):"No notifications";});
+      watch(db.collection("results").orderBy("createdAt","desc").limit(10),"results",d=>{const x=d[0];if(x) $("#winnerBox").innerHTML=`<b>${x.tournamentName||"Tournament"}</b><br>Winner: ${x.winnerName||x.winnerUid||"N/A"}<br>Prize: ₹${x.prize||0}`;});
+      watch(db.collection("walletTransactions").where("uid","==",uid()).orderBy("createdAt","desc").limit(30),"wallet",d=>{$("#txnTable").innerHTML=d.map(x=>`<tr><td>${x.type||""}</td><td>₹${x.amount||0}</td><td><span class="status ${x.status==="approved"?"ok":x.status==="rejected"?"bad":"warn"}">${x.status||"pending"}</span></td><td>${x.createdAt&&x.createdAt.toDate?x.createdAt.toDate().toLocaleString():""}</td></tr>`).join("")||"<tr><td colspan='4'>No transactions</td></tr>";});
+      watch(db.collection("results").where("winnerUid","==",uid()).orderBy("createdAt","desc"),"history",d=>{$("#historyTable").innerHTML=d.map(x=>`<tr><td>${x.tournamentName||x.tournamentId||""}</td><td>${x.position||""}</td><td>${x.kills||0}</td><td>₹${x.prize||0}</td><td>${x.createdAt&&x.createdAt.toDate?x.createdAt.toDate().toLocaleString():""}</td></tr>`).join("")||"<tr><td colspan='5'>No history</td></tr>";});
+      watch(db.collection("tournaments").orderBy("date","desc"),"tournaments",d=>renderTournaments(d,settings));
+      $("#profilePhoto").src=settings.defaultAvatar||$("#profilePhoto").src;
+    }
+    function renderTournaments(list,settings){
+      const arr=list.filter(x=>(x.status||"upcoming")===S.tab);
+      $("#tournamentList").innerHTML=arr.length?arr.map(t=>`
+        <div class="card span-4">
+          <div class="badge"><span class="material-icons-round">sports_esports</span> ${t.status||"upcoming"}</div>
+          <h3 style="margin:10px 0 6px">${t.matchName||"Untitled"}</h3>
+          <div class="small">Entry Fee: ₹${t.entryFee||0} | Prize Pool: ₹${t.prizePool||0}</div>
+          <div class="small">Slots: ${t.totalSlots||0} | Remaining: ${t.remainingSlots ?? t.totalSlots ?? 0}</div>
+          <div class="small">${t.squadType||""} • ${t.map||""}</div>
+          <div class="small">${t.date||""} ${t.time||""}</div>
+          <div class="notice" style="margin-top:8px">${t.registrationOpen===false?"Registration closed":"Registration open"}</div>
+          <button class="btn" style="width:100%;margin-top:10px" onclick="registerTournament('${t.id}')">Register Now</button>
+        </div>`).join(""):"<div class='notice'>No tournaments in this tab.</div>";
+      $("#upcomingBox").innerHTML=list.find(x=>x.status==="upcoming")?`<b>${list.find(x=>x.status==="upcoming").matchName}</b><br>${list.find(x=>x.status==="upcoming").date||""} ${list.find(x=>x.status==="upcoming").time||""}`:"No upcoming tournament.";
+    }
+    async function registerTournament(id){
+      const t=(await db.collection("tournaments").doc(id).get()).data();
+      if(!auth.currentUser) return toast("Login required","warn");
+      if(!t) return toast("Tournament not found","bad");
+      if(t.registrationOpen===false) return toast("Registration closed","warn");
+      const player={inGameName:$("#pIGN").value.trim(),freeFireUid:$("#pUid").value.trim(),whatsappNumber:$("#pMobile").value.trim(),teamName:prompt("Team Name (optional)")||"",tournamentId:id,tournamentName:t.matchName,uid:uid(),entryFee:Number(t.entryFee||0),createdAt:firebase.firestore.FieldValue.serverTimestamp(),status:"joined"};
+      if(!player.inGameName||!player.freeFireUid||!player.whatsappNumber) return toast("Fill profile first","warn");
+      const already=await db.collection("registrations").where("uid","==",uid()).where("tournamentId","==",id).get();
+      if(!already.empty) return toast("Already joined","warn");
+      const userDoc=await db.collection("users").doc(uid()).get();
+      const bal=(userDoc.data()||{}).walletBalance||0;
+      if(bal<player.entryFee) return toast("Insufficient wallet balance","bad");
+      await db.runTransaction(async tx=>{
+        const uref=db.collection("users").doc(uid());
+        const tref=db.collection("tournaments").doc(id);
+        const u=await tx.get(uref); const tr=await tx.get(tref);
+        if(!tr.exists) throw new Error("Tournament missing");
+        const rem=Number(tr.data().remainingSlots??tr.data().totalSlots??0);
+        if(rem<=0) throw new Error("Slots full");
+        tx.update(uref,{walletBalance:firebase.firestore.FieldValue.increment(-player.entryFee),totalMatches:firebase.firestore.FieldValue.increment(1)});
+        tx.update(tref,{remainingSlots:firebase.firestore.FieldValue.increment(-1)});
+        tx.set(db.collection("registrations").doc(),player);
+        tx.set(db.collection("walletTransactions").doc(),{uid:uid(),type:"tournament_entry",amount:player.entryFee,status:"approved",createdAt:firebase.firestore.FieldValue.serverTimestamp(),tournamentId:id});
+      }).then(()=>toast("Registration successful")).catch(e=>toast(e.message,"bad"));
+    }
+    async function saveProfile(){
+      let photoURL="";
+      const f=$("#pPhoto").files[0];
+      if(f){const ref=storage.ref(`profiles/${uid()}/${Date.now()}_${f.name}`);await ref.put(f);photoURL=await ref.getDownloadURL();}
+      await db.collection("users").doc(uid()).set({
+        username:$("#pUsername").value.trim(),
+        freeFireUid:$("#pUid").value.trim(),
+        inGameName:$("#pIGN").value.trim(),
+        mobileNumber:$("#pMobile").value.trim(),
+        country:$("#pCountry").value.trim(),
+        photoURL:photoURL||undefined,
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+      toast("Profile saved");
+      loadUserProfile();
+    }
+    async function deposit(){
+      const amt=Number($("#depAmount").value), utr=$("#depUTR").value.trim(), f=$("#depFile").files[0];
+      if(!amt||!utr) return toast("Amount and UTR required","warn");
+      let ss="";
+      if(f){const ref=storage.ref(`deposits/${uid()}/${Date.now()}_${f.name}`);await ref.put(f);ss=await ref.getDownloadURL();}
+      await db.collection("deposits").add({userUid:uid(),amount:amt,utr,screenshot:ss,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      await db.collection("walletTransactions").add({uid:uid(),type:"deposit",amount:amt,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      toast("Deposit submitted");
+    }
+    async function withdraw(){
+      const amt=Number($("#wdAmount").value), upi=$("#wdUPI").value.trim();
+      if(!amt||!upi) return toast("Amount and UPI required","warn");
+      const u=(await db.collection("users").doc(uid()).get()).data()||{};
+      const bal=u.walletBalance||0;
+      const min=Number((await db.collection("settings").doc("app").get()).data()?.minWithdraw||0);
+      if(amt<min) return toast("Below minimum withdraw","warn");
+      if(bal<amt) return toast("Insufficient balance","bad");
+      await db.collection("withdrawals").add({userUid:uid(),amount:amt,upiId:upi,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      await db.collection("walletTransactions").add({uid:uid(),type:"withdraw",amount:amt,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      toast("Withdraw request sent");
+    }
+    async function redeem(){
+      const code=$("#redeemCode").value.trim(); if(!code) return toast("Enter code","warn");
+      const ref=db.collection("redeemCodes").doc(code); const d=await ref.get(); if(!d.exists) return toast("Invalid code","bad");
+      const x=d.data(); if(!x.active) return toast("Code inactive","warn");
+      if(x.expiry && new Date(x.expiry)<new Date()) return toast("Code expired","warn");
+      x.usedBy=x.usedBy||[]; if(x.usedBy.includes(uid())) return toast("Already used","warn");
+      if(x.usageLimit && x.usedBy.length>=x.usageLimit) return toast("Usage limit reached","warn");
+      await ref.update({usedBy:firebase.firestore.FieldValue.arrayUnion(uid())});
+      await db.collection("users").doc(uid()).set({walletBalance:firebase.firestore.FieldValue.increment(Number(x.reward||0))},{merge:true});
+      await db.collection("walletTransactions").add({uid:uid(),type:"redeem",amount:Number(x.reward||0),status:"approved",createdAt:firebase.firestore.FieldValue.serverTimestamp(),code});
+      toast("Redeem applied");
+      loadUserProfile();
+    }
+    async function contact(){
+      await db.collection("contactMessages").add({uid:uid(),message:$("#contactMsg").value,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+      toast("Message sent");
+    }
+    async function register(){
+      const email=$("#regEmail").value.trim(), pass=$("#regPassword").value, name=$("#regName").value.trim();
+      const phone=$("#regPhone").value.trim(), country=$("#regCountry").value.trim(), refCode=$("#regReferral").value.trim();
+      try{
+        const cred=await auth.createUserWithEmailAndPassword(email,pass);
+        await cred.user.sendEmailVerification();
+        const myRef="FF"+Math.random().toString(36).slice(2,8).toUpperCase();
+        await db.collection("users").doc(cred.user.uid).set({username:name,mobileNumber:phone,country,referralCode:myRef,referredBy:refCode||"",walletBalance:0,bonusBalance:0,referralEarnings:0,totalMatches:0,totalWins:0,totalEarnings:0,role:"user",email,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        toast("Account created. Verify email.");
+        $("#authMsg").textContent="Verification email sent.";
+      }catch(e){toast(e.message,"bad")}
+    }
+    async function login(){
+      try{
+        const e=$("#loginEmail").value.trim(),p=$("#loginPassword").value;
+        await auth.signInWithEmailAndPassword(e,p);
+        toast("Login successful");
+      }catch(e){toast(e.message,"bad");$("#authMsg").textContent=e.message}
+    }
+    async function forgot(){ const e=$("#loginEmail").value.trim(); if(!e) return toast("Enter email first","warn"); await auth.sendPasswordResetEmail(e); toast("Password reset email sent"); }
+    async function resend(){ const u=auth.currentUser; if(u){ await u.sendEmailVerification(); toast("Verification email sent"); } }
+    function loadNav(){ $("#menu").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b) return; show(b.dataset.view)}); $$(".tab").forEach(b=>b.onclick=()=>{$$(".tab").forEach(x=>x.classList.remove("active")); b.classList.add("active"); S.tab=b.dataset.tab; renderTournaments(S.cache.tournaments,{});}); }
+    $("#showLogin").onclick=()=>{$("#loginBox").classList.remove("hidden");$("#registerBox").classList.add("hidden");$("#showLogin").classList.add("active");$("#showRegister").classList.remove("active")};
+    $("#showRegister").onclick=()=>{$("#registerBox").classList.remove("hidden");$("#loginBox").classList.add("hidden");$("#showRegister").classList.add("active");$("#showLogin").classList.remove("active")};
+    $("#loginBtn").onclick=login; $("#registerBtn").onclick=register; $("#forgotBtn").onclick=forgot; $("#verifyBtn").onclick=resend; $("#logoutBtn").onclick=()=>auth.signOut(); $("#saveProfileBtn").onclick=saveProfile; $("#depositBtn").onclick=deposit; $("#withdrawBtn").onclick=withdraw; $("#redeemBtn").onclick=redeem; $("#contactBtn").onclick=contact;
+    $("#themeBtn").onclick=()=>toast("Dark mode is default");
+    $("#langBtn").onclick=()=>toast("Language saved via settings collection");
+    $("#saveSettingsBtn").onclick=()=>toast("Settings UI ready");
+    $("#darkModeBtn").onclick=()=>toast("Dark mode active");
+    $("#privacyBtn").onclick=()=>show("policy");
+    $("#termsBtn").onclick=()=>show("policy");
+    $("#aboutBtn").onclick=()=>show("policy");
+    loadNav();
+    auth.onAuthStateChanged(async u=>{
+      if(!u){ $("#authScreen").classList.remove("hidden"); $("#app").classList.add("hidden"); return; }
+      if(!u.emailVerified){ $("#authMsg").textContent="Please verify your email first."; $("#authScreen").classList.remove("hidden"); $("#app").classList.add("hidden"); return; }
+      S.user=u; $("#authScreen").classList.add("hidden"); $("#app").classList.remove("hidden"); await loadAll();
+    });
+  </script>
+</body>
+</html>

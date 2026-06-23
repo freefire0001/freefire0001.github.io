@@ -305,7 +305,11 @@
       const password = $('#password').value;
       try{
         const res = await auth.signInWithEmailAndPassword(email, password);
-        if(!res.user.emailVerified){ $('#authMsg').textContent = 'Please verify email first.'; return; }
+        // Email verify ka check hata diya:
+    // if(!res.user.emailVerified){ 
+    //   $('#authMsg').textContent = 'Please verify email first.'; 
+    //   return; 
+    // }
         await verifyAdmin(res.user);
         toast('Admin login success');
       }catch(e){ $('#authMsg').textContent = e.message; toast(e.message,'bad'); }

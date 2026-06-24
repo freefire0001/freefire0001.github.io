@@ -92,7 +92,6 @@
                         <!-- Signup Form (Initially Hidden) -->
                         <form id="emailSignupForm" style="display: none;">
                             <h2 class="card-title text-center mb-4">Sign Up</h2>
-                            <div class="mb-3"> <label for="signupffuidInputEl" class="form-label">FreeFire UID</label> <input type="ffuid" class="form-control" id="signupFfuidInputEl" placeholder="FreeFire_Uid" required> </div>
                             <div class="mb-3"> <label for="signupEmailInputEl" class="form-label">Email</label> <input type="email" class="form-control" id="signupEmailInputEl" placeholder="name@example.com" required> </div>
                             <div class="mb-3"> <label for="signupPasswordInputEl" class="form-label">Password (min 6 chars)</label> <input type="password" class="form-control" id="signupPasswordInputEl" placeholder="Password" required minlength="6"> </div>
                             <div class="mb-3"> <label for="signupConfirmPasswordInputEl" class="form-label">Confirm Password</label> <input type="password" class="form-control" id="signupConfirmPasswordInputEl" placeholder="Confirm Password" required> </div>
@@ -446,7 +445,6 @@
         // --- Firebase Auth Functions ---
          async function signUpWithEmail() {
              if (!auth) return;
-             const ffUid = document.getElementById("ffUid").value.trim();
              const em = elements.signupEmailInput.value.trim();
              const pw = elements.signupPasswordInput.value;
              const cpw = elements.signupConfirmPasswordInput.value;

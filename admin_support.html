@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>Admin Support Panel</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ---------- RESET & BASE ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #0b141a;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+        }
+
+        /* ---------- ADMIN CONTAINER ---------- */
+        .admin-container {
+            max-width: 1100px;
+            width: 100%;
+            height: 96vh;
+            max-height: 820px;
+            background: #111b21;
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ---------- SIDEBAR (USER LIST) ---------- */
+        .sidebar {
+            width: 320px;
+            min-width: 250px;
+            background: #1f2c33;
+            border-right: 1px solid #2a3942;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 16px 18px;
+            background: #1f2c33;
+            border-bottom: 1px solid #2a3942;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header h2 {
+            color: #e9edef;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-header h2 i {
+            color: #25d366;
+        }
+
+        .online-count {
+            font-size: 0.7rem;
+            background: #25d366;
+            color: #111b21;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .user-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .user-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .user-list::-webkit-scrollbar-thumb {
+            background: #25d366;
+            border-radius: 10px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid #2a3942;
+            position: relative;
+        }
+        .user-item:hover {
+            background: #2a3942;
+        }
+        .user-item.active {
+            background: #2a3942;
+            border-left: 3px solid #25d366;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #2a3942;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #aebac1;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid #3b4a54;
+        }
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .user-avatar .online-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 16px;
+            width: 12px;
+            height: 12px;
+            background: #25d366;
+            border-radius: 50%;
+            border: 2px solid #1f2c33;
+        }
+        .user-avatar .offline-indicator {
+            background: #6b7a84;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .user-name {
+            color: #e9edef;
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-last-msg {
+            color: #8696a0;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+        .user-time {
+            color: #8696a0;
+            font-size: 0.65rem;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+        .unread-badge {
+            background: #25d366;
+            color: #111b21;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+
+        /* ---------- CHAT AREA ---------- */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0b141a;
+            min-width: 0;
+        }
+
+        /* Chat header */
+        .chat-header {
+            background: #1f2c33;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #2a3942;
+            flex-shrink: 0;
+        }
+
+        .chat-header .user-avatar {
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            border-color: #25d366;
+        }
+        .chat-header .user-info {
+            flex: 1;
+        }
+        .chat-header .user-name {
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .chat-header .user-name:hover {
+            color: #25d366;
+        }
+        .chat-header .user-status {
+            font-size: 0.7rem;
+            color: #aebac1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chat-header .online-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #25d366;
+            border-radius: 50%;
+            animation: pulse-dot 1.8s infinite;
+        }
+        .chat-header .online-dot.offline {
+            background: #6b7a84;
+            animation: none;
+        }
+        @keyframes pulse-dot {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        /* Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px 10px;
+            background: #0b141a;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230b141a" /><circle cx="20" cy="20" r="2" fill="%231a2c38" opacity="0.25"/><circle cx="70" cy="40" r="3" fill="%231a2c38" opacity="0.15"/><circle cx="40" cy="80" r="2" fill="%231a2c38" opacity="0.2"/></svg>');
+            background-size: 120px 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            scroll-behavior: smooth;
+        }
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 82%;
+            animation: fadeSlide 0.2s ease-out;
+        }
+        .message-wrapper.user {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+        .message-wrapper.admin {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+
+        .bubble {
+            padding: 9px 14px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-break: break-word;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+        .user .bubble {
+            background: #005c4b;
+            color: #e9edef;
+            border-bottom-right-radius: 4px;
+        }
+        .admin .bubble {
+            background: #1f2c33;
+            color: #e9edef;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #2a3942;
+        }
+        .message-time {
+            font-size: 0.6rem;
+            opacity: 0.6;
+            margin-top: 4px;
+            padding: 0 6px;
+            color: #aebac1;
+        }
+        .user .message-time { text-align: right; }
+        .admin .message-time { text-align: left; }
+
+        .date-separator {
+            text-align: center;
+            margin: 12px 0 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #aebac1;
+            background: #2a3942cc;
+            width: fit-content;
+            padding: 4px 16px;
+            border-radius: 30px;
+            align-self: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #aebac1;
+            gap: 10px;
+            text-align: center;
+            padding: 20px;
+        }
+        .empty-state i {
+            font-size: 3.2rem;
+            opacity: 0.3;
+        }
+
+        /* Input */
+        .chat-input-area {
+            background: #1f2c33;
+            padding: 10px 14px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #2a3942;
+            flex-shrink: 0;
+        }
+        .chat-input-area input {
+            flex: 1;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            background: #2a3942;
+            color: #e9edef;
+            outline: none;
+            border: 1px solid transparent;
+            transition: border 0.15s;
+        }
+        .chat-input-area input::placeholder {
+            color: #8696a0;
+        }
+        .chat-input-area input:focus {
+            border-color: #25d366;
+            box-shadow: 0 0 0 3px #25d36630;
+        }
+        .send-btn {
+            background: #25d366;
+            border: none;
+            color: #111b21;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+            flex-shrink: 0;
+        }
+        .send-btn:active {
+            transform: scale(0.92);
+            background: #1fa85a;
+        }
+        .send-btn:disabled {
+            opacity: 0.35;
+            transform: scale(0.96);
+            box-shadow: none;
+            pointer-events: none;
+        }
+        .send-btn i {
+            transform: rotate(45deg);
+            margin-left: 2px;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---------- PROFILE MODAL ---------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.25s ease;
+            padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        @keyframes modalFadeIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-card {
+            background: #1f2c33;
+            max-width: 400px;
+            width: 100%;
+            border-radius: 28px;
+            padding: 28px 24px 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid #2a3942;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: #aebac1;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.15s;
+        }
+        .modal-close:hover {
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        .modal-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #2a3942;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            color: #aebac1;
+            border: 3px solid #25d366;
+            overflow: hidden;
+        }
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal-name {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #e9edef;
+            margin-bottom: 4px;
+        }
+        .modal-status {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #aebac1;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .modal-divider {
+            height: 1px;
+            background: #2a3942;
+            margin: 14px 0;
+        }
+        .modal-info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .modal-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #2a3942;
+        }
+        .modal-info-item:last-child { border-bottom: none; }
+        .modal-info-label {
+            color: #8696a0;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .modal-info-value {
+            color: #e9edef;
+            font-size: 0.95rem;
+            text-align: right;
+            word-break: break-word;
+            max-width: 60%;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                min-width: unset;
+                border-right: none;
+                border-bottom: 1px solid #2a3942;
+            }
+            .admin-container {
+                flex-direction: column;
+                border-radius: 20px;
+                height: 98vh;
+            }
+            .chat-area {
+                display: none;
+            }
+            .chat-area.active {
+                display: flex;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: #0b141a;
+                z-index: 10;
+                border-radius: 20px;
+            }
+            .back-to-list {
+                display: flex !important;
+            }
+            .sidebar-header .back-to-list {
+                display: none;
+            }
+        }
+
+        .back-to-list {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #aebac1;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .back-to-list:hover {
+            color: #fff;
+        }
+
+        @media (min-width: 769px) {
+            .back-to-list {
+                display: none !important;
+            }
+        }
+
+        /* Loading */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            color: #aebac1;
+            gap: 10px;
+        }
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border: 3px solid #2a3942;
+            border-top: 3px solid #25d366;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container" id="app">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-headset"></i> Live Chats</h2>
+                <span class="online-count" id="onlineCount">0</span>
+                <button class="back-to-list" id="backToListBtn" style="display:none;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            <div class="user-list" id="userList">
+                <!-- Users will be rendered here -->
+            </div>
+        </div>
+
+        <!-- CHAT AREA -->
+        <div class="chat-area" id="chatArea">
+            <!-- Chat Header -->
+            <div class="chat-header" id="chatHeader">
+                <button class="back-to-list" id="mobileBackBtn" style="display:none;">
+                    <i class="fas fa-arrow-left" style="color:#aebac1;font-size:1.3rem;background:transparent;border:none;"></i>
+                </button>
+                <div class="user-avatar" id="chatAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="chatUserName">Select a user</div>
+                    <div class="user-status">
+                        <span class="online-dot" id="chatStatusDot"></span>
+                        <span id="chatStatusText">Offline</span>
+                    </div>
+                </div>
+                <div style="flex:1;"></div>
+            </div>
+
+            <!-- Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <div id="messageContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-comment-dots"></i>
+                        <span>Select a user to start chatting</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <div class="chat-input-area">
+                <input type="text" id="messageInput" placeholder="Type admin reply..." autocomplete="off" disabled />
+                <button class="send-btn" id="sendBtn" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-card">
+            <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
+            <div class="modal-avatar" id="modalAvatar"><i class="fas fa-user"></i></div>
+            <div class="modal-name" id="modalName">User</div>
+            <div class="modal-status" id="modalStatus">
+                <span class="online-dot" id="modalStatusDot"></span>
+                <span id="modalStatusText">Online</span>
+            </div>
+            <div class="modal-divider"></div>
+            <div class="modal-info-grid">
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Free Fire UID</span>
+                    <span class="modal-info-value" id="modalUid">—</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">In-Game Name</span>
+                    <span class="modal-info-value" id="modalIgn">—</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Email</span>
+                    <span class="modal-info-value" id="modalEmail">—</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Joined</span>
+                    <span class="modal-info-value" id="modalJoined">—</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Last Seen</span>
+                    <span class="modal-info-value" id="modalLastSeen">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---------- FIREBASE CONFIG ----------
+            const firebaseConfig = {
+                apiKey: "",
+                authDomain: "",
+                databaseURL: "",
+                projectId: "",
+                storageBucket: "",
+                messagingSenderId: "",
+                appId: ""
+            };
+
+            const app = firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+
+            // ---------- DOM REFS ----------
+            const userListEl = document.getElementById('userList');
+            const chatArea = document.getElementById('chatArea');
+            const chatUserName = document.getElementById('chatUserName');
+            const chatAvatar = document.getElementById('chatAvatar');
+            const chatStatusDot = document.getElementById('chatStatusDot');
+            const chatStatusText = document.getElementById('chatStatusText');
+            const messageContainer = document.getElementById('messageContainer');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const onlineCount = document.getElementById('onlineCount');
+            const mobileBackBtn = document.getElementById('mobileBackBtn');
+            const backToListBtn = document.getElementById('backToListBtn');
+
+            // Profile modal
+            const profileModal = document.getElementById('profileModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalAvatar = document.getElementById('modalAvatar');
+            const modalName = document.getElementById('modalName');
+            const modalStatusDot = document.getElementById('modalStatusDot');
+            const modalStatusText = document.getElementById('modalStatusText');
+            const modalUid = document.getElementById('modalUid');
+            const modalIgn = document.getElementById('modalIgn');
+            const modalEmail = document.getElementById('modalEmail');
+            const modalJoined = document.getElementById('modalJoined');
+            const modalLastSeen = document.getElementById('modalLastSeen');
+
+            // ---------- STATE ----------
+            let currentUserId = null;
+            let currentUserProfile = null;
+            let messagesRef = null;
+            let allUsers = {};
+            let isMobile = window.innerWidth <= 768;
+
+            // ---------- HELPERS ----------
+            function formatTime(timestamp) {
+                const d = new Date(timestamp);
+                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+            }
+
+            function formatDate(timestamp) {
+                const d = new Date(timestamp);
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (d.toDateString() === today.toDateString()) return 'Today';
+                if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+                return d.toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            function formatFullDate(timestamp) {
+                if (!timestamp) return '—';
+                const d = new Date(timestamp);
+                return d.toLocaleDateString([], { day: 'numeric', month: 'long', year: 'numeric' }) +
+                    ' at ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '—';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function getAvatarHtml(profile) {
+                if (profile && profile.photoURL) {
+                    return `<img src="${profile.photoURL}" alt="Avatar" />`;
+                }
+                return `<i class="fas fa-user"></i>`;
+            }
+
+            function getStatusDot(online) {
+                return online ? 'online-dot' : 'online-dot offline';
+            }
+
+            function getStatusText(online) {
+                return online ? 'Online' : 'Offline';
+            }
+
+            // ---------- RENDER USER LIST ----------
+            function renderUserList(users) {
+                allUsers = users;
+                const userIds = Object.keys(users);
+                let html = '';
+
+                if (userIds.length === 0) {
+                    html = `
+                        <div class="empty-state" style="padding:40px 20px;">
+                            <i class="fas fa-users"></i>
+                            <span>No users yet</span>
+                        </div>
+                    `;
+                    userListEl.innerHTML = html;
+                    onlineCount.textContent = '0';
+                    return;
+                }
+
+                let onlineCountNum = 0;
+
+                // Sort by last message time
+                const sorted = userIds.sort((a, b) => {
+                    const msgA = users[a].lastMessageTime || 0;
+                    const msgB = users[b].lastMessageTime || 0;
+                    return msgB - msgA;
+                });
+
+                sorted.forEach(uid => {
+                    const user = users[uid];
+                    const profile = user.profile || {};
+                    const isOnline = profile.online || false;
+                    if (isOnline) onlineCountNum++;
+
+                    const lastMsg = user.lastMessage || 'No messages';
+                    const lastTime = user.lastMessageTime ? formatTime(user.lastMessageTime) : '';
+                    const displayName = profile.displayName || 'User';
+                    const isActive = uid === currentUserId;
+
+                    html += `
+                        <div class="user-item ${isActive ? 'active' : ''}" data-uid="${uid}">
+                            <div class="user-avatar" style="position:relative;">
+                                ${getAvatarHtml(profile)}
+                                <span class="${isOnline ? 'online-indicator' : 'offline-indicator'}" style="position:absolute;bottom:2px;right:2px;width:12px;height:12px;border-radius:50%;background:${isOnline ? '#25d366' : '#6b7a84'};border:2px solid #1f2c33;"></span>
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">${escapeHtml(displayName)}</div>
+                                <div class="user-last-msg">${escapeHtml(lastMsg)}</div>
+                            </div>
+                            <div class="user-time">${lastTime}</div>
+                        </div>
+                    `;
+                });
+
+                userListEl.innerHTML = html;
+                onlineCount.textContent = onlineCountNum;
+
+                // Add click listeners
+                document.querySelectorAll('.user-item').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const uid = this.dataset.uid;
+                        if (uid) selectUser(uid);
+                    });
+                });
+            }
+
+            // ---------- SELECT USER ----------
+            function selectUser(uid) {
+                if (currentUserId === uid) return;
+
+                // Detach old listener
+                if (messagesRef) {
+                    messagesRef.off();
+                    messagesRef = null;
+                }
+
+                currentUserId = uid;
+                currentUserProfile = allUsers[uid]?.profile || {};
+
+                // Update chat header
+                chatUserName.textContent = currentUserProfile.displayName || 'User';
+                chatAvatar.innerHTML = getAvatarHtml(currentUserProfile);
+                const isOnline = currentUserProfile.online || false;
+                chatStatusDot.className = getStatusDot(isOnline);
+                chatStatusText.textContent = getStatusText(isOnline);
+
+                // Enable input
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+
+                // Show chat on mobile
+                if (isMobile) {
+                    chatArea.classList.add('active');
+                }
+
+                // Load messages
+                loadMessages(uid);
+
+                // Highlight user in list
+                document.querySelectorAll('.user-item').forEach(el => {
+                    el.classList.toggle('active', el.dataset.uid === uid);
+                });
+            }
+
+            // ---------- LOAD MESSAGES ----------
+            function loadMessages(uid) {
+                messageContainer.innerHTML = `
+                    <div class="loading-spinner">
+                        <div class="spinner"></div> Loading messages...
+                    </div>
+                `;
+
+                messagesRef = database.ref('chats/' + uid + '/messages');
+
+                messagesRef.on('value', (snapshot) => {
+                    if (!snapshot.exists()) {
+                        messageContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>No messages yet</span>
+                                <span style="font-size:0.8rem;opacity:0.6;">Send a reply to start</span>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const messages = [];
+                    snapshot.forEach(child => {
+                        messages.push({ id: child.key, ...child.val() });
+                    });
+                    messages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+                    let html = '';
+                    let currentDate = '';
+
+                    messages.forEach(msg => {
+                        const msgDate = formatDate(msg.timestamp || Date.now());
+                        const time = formatTime(msg.timestamp || Date.now());
+                        const sender = msg.sender || 'user';
+                        const text = msg.text || '';
+
+                        if (msgDate !== currentDate) {
+                            currentDate = msgDate;
+                            html += `<div class="date-separator">${currentDate}</div>`;
+                        }
+
+                        const wrapperClass = sender === 'user' ? 'user' : 'admin';
+                        html += `
+                            <div class="message-wrapper ${wrapperClass}">
+                                <div class="bubble">${escapeHtml(text)}</div>
+                                <div class="message-time">${time}</div>
+                            </div>
+                        `;
+                    });
+
+                    messageContainer.innerHTML = html;
+                    scrollToBottom();
+
+                    // Update last message in user list
+                    if (messages.length > 0) {
+                        const last = messages[messages.length - 1];
+                        if (allUsers[uid]) {
+                            allUsers[uid].lastMessage = last.text || 'Media';
+                            allUsers[uid].lastMessageTime = last.timestamp || Date.now();
+                            renderUserList(allUsers);
+                        }
+                    }
+
+                }, (error) => {
+                    console.error('Messages error:', error);
+                    messageContainer.innerHTML = `
+                        <div class="empty-state" style="color:#e74c3c;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Error loading messages</span>
+                        </div>
+                    `;
+                });
+            }
+
+            // ---------- SCROLL TO BOTTOM ----------
+            function scrollToBottom() {
+                setTimeout(() => {
+                    const chatMessages = document.getElementById('chatMessages');
+                    if (chatMessages) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }, 50);
+            }
+
+            // ---------- SEND ADMIN REPLY ----------
+            function sendMessage() {
+                if (!currentUserId) return;
+                const text = messageInput.value.trim();
+                if (!text) return;
+
+                const msgRef = database.ref('chats/' + currentUserId + '/messages');
+                const newMsg = {
+                    sender: 'admin',
+                    text: text,
+                    timestamp: Date.now()
+                };
+
+                msgRef.push(newMsg)
+                    .then(() => {
+                        messageInput.value = '';
+                        sendBtn.disabled = true;
+                        // Update last message in user list
+                        if (allUsers[currentUserId]) {
+                            allUsers[currentUserId].lastMessage = text;
+                            allUsers[currentUserId].lastMessageTime = Date.now();
+                            renderUserList(allUsers);
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Send error:', err);
+                        alert('Failed to send message.');
+                    });
+            }
+
+            // ---------- LISTEN ALL USERS ----------
+            function listenUsers() {
+                const usersRef = database.ref('chats');
+
+                usersRef.on('value', (snapshot) => {
+                    const users = {};
+                    let hasUsers = false;
+
+                    snapshot.forEach(child => {
+                        const uid = child.key;
+                        const data = child.val();
+                        if (data && data.profile) {
+                            users[uid] = {
+                                profile: data.profile,
+                                lastMessage: data.lastMessage || '',
+                                lastMessageTime: data.lastMessageTime || 0
+                            };
+                            hasUsers = true;
+                        }
+                    });
+
+                    if (!hasUsers) {
+                        userListEl.innerHTML = `
+                            <div class="empty-state" style="padding:40px 20px;">
+                                <i class="fas fa-users"></i>
+                                <span>No users registered yet</span>
+                            </div>
+                        `;
+                        onlineCount.textContent = '0';
+                        return;
+                    }
+
+                    renderUserList(users);
+
+                    // Auto-select first user if none selected
+                    if (!currentUserId && Object.keys(users).length > 0) {
+                        const firstUid = Object.keys(users)[0];
+                        selectUser(firstUid);
+                    } else if (currentUserId && users[currentUserId]) {
+                        // Update current user profile
+                        currentUserProfile = users[currentUserId].profile || {};
+                        chatUserName.textContent = currentUserProfile.displayName || 'User';
+                        chatAvatar.innerHTML = getAvatarHtml(currentUserProfile);
+                        const isOnline = currentUserProfile.online || false;
+                        chatStatusDot.className = getStatusDot(isOnline);
+                        chatStatusText.textContent = getStatusText(isOnline);
+                    }
+                }, (error) => {
+                    console.error('Users list error:', error);
+                });
+            }
+
+            // ---------- PROFILE MODAL ----------
+            function openProfileModal(userData) {
+                const profile = userData || currentUserProfile || {};
+                modalAvatar.innerHTML = getAvatarHtml(profile);
+                modalName.textContent = profile.displayName || 'User';
+                const isOnline = profile.online || false;
+                modalStatusDot.className = getStatusDot(isOnline);
+                modalStatusText.textContent = getStatusText(isOnline);
+                modalUid.textContent = profile.freeFireUid || '—';
+                modalIgn.textContent = profile.ign || '—';
+                modalEmail.textContent = profile.email || '—';
+                modalJoined.textContent = profile.createdAt ? formatFullDate(profile.createdAt) : '—';
+                modalLastSeen.textContent = profile.lastSeen ? formatFullDate(profile.lastSeen) : '—';
+                profileModal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeProfileModal() {
+                profileModal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            // ---------- EVENT LISTENERS ----------
+            // Send button
+            sendBtn.addEventListener('click', sendMessage);
+
+            // Enter key
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!sendBtn.disabled) sendMessage();
+                }
+            });
+
+            // Input enable/disable send
+            messageInput.addEventListener('input', () => {
+                const val = messageInput.value.trim();
+                sendBtn.disabled = (val === '' || !currentUserId);
+            });
+
+            // Profile click on header avatar/name
+            document.querySelector('.chat-header .user-avatar')?.addEventListener('click', () => {
+                if (currentUserId && currentUserProfile) {
+                    openProfileModal(currentUserProfile);
+                }
+            });
+
+            document.querySelector('.chat-header .user-name')?.addEventListener('click', () => {
+                if (currentUserId && currentUserProfile) {
+                    openProfileModal(currentUserProfile);
+                }
+            });
+
+            // Modal close
+            modalCloseBtn.addEventListener('click', closeProfileModal);
+            profileModal.addEventListener('click', (e) => {
+                if (e.target === profileModal) closeProfileModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && profileModal.classList.contains('open')) closeProfileModal();
+            });
+
+            // Mobile back buttons
+            function handleMobileBack() {
+                chatArea.classList.remove('active');
+            }
+
+            mobileBackBtn.addEventListener('click', handleMobileBack);
+            backToListBtn.addEventListener('click', handleMobileBack);
+
+            // Window resize
+            window.addEventListener('resize', () => {
+                isMobile = window.innerWidth <= 768;
+                if (!isMobile) {
+                    chatArea.classList.remove('active');
+                }
+            });
+
+            // ---------- INIT ----------
+            listenUsers();
+
+            // Cleanup on unload
+            window.addEventListener('beforeunload', function() {
+                if (messagesRef) messagesRef.off();
+                const usersRef = database.ref('chats');
+                usersRef.off();
+            });
+
+            console.log('Admin Support Panel initialized.');
+
+        })();
+    </script>
+
+</body>
+</html>

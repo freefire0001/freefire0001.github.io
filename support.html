@@ -816,7 +816,7 @@
                 const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
                 const cutoffTime = now - twentyFourHours;
 
-                const msgRef = database.ref('chats/' + uid + '/messages');
+                const msgRef = database.ref('chats/support' + uid + '/messages');
                 msgRef.orderByChild('timestamp').endAt(cutoffTime).once('value')
                     .then((snapshot) => {
                         const updates = {};

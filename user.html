@@ -183,69 +183,7 @@
 
     <!-- Modals -->
     <div class="modal fade" id="policyModalEl" tabindex="-1"><div class="modal-dialog modal-dialog-scrollable modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="policyModalTitleEl">Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="policyModalBodyEl" style="min-height: 300px;"></div></div></div></div>
-    <div class="deposit-container" id="addAmountWalletBtnEl" style="text-align:center;">
-
-    <h3 style="margin-bottom:15px;">💳 Deposit Funds</h3>
-
-    <img
-        src="YOUR_QR_IMAGE_URL_HERE"
-        alt="UPI QR"
-        style="width:220px;border-radius:12px;margin-bottom:15px;"
-    >
-
-    <p style="font-size:14px;color:#aaa;">
-        Scan the QR code and complete payment
-    </p>
-
-    <input
-        type="number"
-        id="depositAmount"
-        placeholder="Enter Amount Paid"
-        style="
-            width:100%;
-            padding:12px;
-            margin-top:10px;
-            border-radius:10px;
-            border:none;
-            outline:none;
-        "
-    >
-
-    <input
-        type="text"
-        id="transactionId"
-        placeholder="Enter Transaction ID"
-        style="
-            width:100%;
-            padding:12px;
-            margin-top:10px;
-            border-radius:10px;
-            border:none;
-            outline:none;
-        "
-    >
-
-    <button
-        id="submitDepositBtn"
-        style="
-            width:100%;
-            padding:12px;
-            margin-top:15px;
-            border:none;
-            border-radius:10px;
-            background:#f7c600;
-            font-weight:bold;
-            cursor:pointer;
-        "
-    >
-        Submit Deposit Request
-    </button>
-
-    <p style="font-size:12px;color:#999;margin-top:10px;">
-        After verification, balance will be added manually by admin.
-    </p>
-
-    </div>
+    <div class="modal fade" id="addAmountModalEl" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title"><i class="bi bi-wallet-fill me-2"></i> How to Add Amount?</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><p>To add amount, pay via UPI/PhonePe to:</p><p class="text-center text-warning"><strong>UPI ID/Number:</strong> <span class="phonepe-number">[!!! YOUR UPI ID/NUMBER HERE !!!]</span></p><p class="mt-3 small"><strong><i class="bi bi-exclamation-triangle-fill text-warning"></i> IMPORTANT:</strong> After payment, contact admin via [!!! ADMIN CONTACT INFO HERE !!!] with registered Email (<strong id="modalUserEmailEl">...</strong>) & payment screenshot. Amount added manually after verification.</p></div><div class="modal-footer"><button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Got it</button></div></div></div></div>
     <div class="modal fade" id="withdrawModalEl" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title"><i class="bi bi-cash-coin me-2"></i> Withdraw Funds</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><p class="small text-secondary">Withdrawable balance: <strong class="text-light" id="withdrawModalBalanceEl">₹0.00</strong></p><div class="mb-3"><label for="withdrawAmountInputEl" class="form-label">Amount (Min ₹<span id="minWithdrawAmountEl">50</span>)</label><input type="number" class="form-control" id="withdrawAmountInputEl" placeholder="Enter amount"></div><div class="mb-3"><label for="withdrawMethodInputEl" class="form-label">Withdrawal Method (UPI/Bank)</label><input type="text" class="form-control" id="withdrawMethodInputEl" placeholder="Enter UPI ID / Bank Details"></div><div id="withdrawStatusMessageEl" class="alert mt-3" style="display: none;"></div></div><div class="modal-footer"><button type="button" class="btn btn-custom btn-custom-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-custom btn-custom-primary" id="submitWithdrawRequestBtnEl">Submit Request</button></div></div></div></div>
     <div class="modal fade" id="matchDetailsModalEl" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="matchDetailsModalTitleEl">Match Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="matchDetailsModalBodyEl"></div></div></div></div>
     <div class="modal fade" id="idPasswordModalEl" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Room ID & Password</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body text-center"><p class="small text-secondary">ID/Pass shown shortly before match start.</p><div class="my-3 p-3" style="background: var(--primary-bg); border-radius: 8px;"><p class="mb-1">Room ID:</p><h4 id="roomIdDisplayEl" class="text-accent referral-code placeholder-glow d-inline-block"><span class="placeholder col-6"></span></h4><button class="btn btn-sm btn-outline-warning ms-2 copy-btn" data-target="#roomIdDisplayEl" title="Copy Room ID"><i class="bi bi-clipboard"></i></button></div><div class="my-3 p-3" style="background: var(--primary-bg); border-radius: 8px;"><p class="mb-1">Password:</p><h4 id="roomPasswordDisplayEl" class="text-accent referral-code placeholder-glow d-inline-block"><span class="placeholder col-6"></span></h4><button class="btn btn-sm btn-outline-warning ms-2 copy-btn" data-target="#roomPasswordDisplayEl" title="Copy Password"><i class="bi bi-clipboard"></i></button></div><p class="small text-warning"><i class="bi bi-exclamation-triangle"></i> Don't share ID/Password.</p></div></div></div></div>

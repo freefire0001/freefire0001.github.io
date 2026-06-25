@@ -313,7 +313,7 @@
             document.body.innerHTML = `<div class="alert alert-danger m-5 position-fixed top-0 start-0 end-0" style="z-index: 10000;">Critical Error: Could not connect. Check Firebase config & console. Error: ${error.message}</div>`;
         }
 
-        // --- DOM Elements Cache ---
+        // -- DOM Elements Cache ---
          const getElement = (id) => document.getElementById(id);
          const querySel = (selector) => document.querySelector(selector);
          const querySelAll = (selector) => document.querySelectorAll(selector);

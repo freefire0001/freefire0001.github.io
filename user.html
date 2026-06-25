@@ -95,6 +95,11 @@
                             <div class="mb-3"> <label for="signupEmailInputEl" class="form-label">Email</label> <input type="email" class="form-control" id="signupEmailInputEl" placeholder="name@example.com" required> </div>
                             <div class="mb-3"> <label for="signupPasswordInputEl" class="form-label">Password (min 6 chars)</label> <input type="password" class="form-control" id="signupPasswordInputEl" placeholder="Password" required minlength="6"> </div>
                             <div class="mb-3"> <label for="signupConfirmPasswordInputEl" class="form-label">Confirm Password</label> <input type="password" class="form-control" id="signupConfirmPasswordInputEl" placeholder="Confirm Password" required> </div>
+                            <div class="mb-3">
+                              <label for="signupUidInput" class="form-label">Free Fire UID</label>
+                              <input type="text" class="form-control" id="signupUidInput" placeholder="Enter your Free Fire UID (8-15 digits)" required>
+                              <small class="text-muted">Example: 1234567890</small>
+                            </div>
                             <!-- *** REFERRAL CODE INPUT ADDED *** -->
                             <div class="mb-3"> <label for="signupReferralCodeInputEl" class="form-label">Referral Code (Optional)</label> <input type="text" class="form-control" id="signupReferralCodeInputEl" placeholder="Enter referral code"> </div>
                             <div id="card-titleutElInputEly: none;"></div>
@@ -448,11 +453,20 @@
              const em = elements.signupEmailInput.value.trim();
              const pw = elements.signupPasswordInput.value;
              const cpw = elements.signupConfirmPasswordInput.value;
+             const uid = document.getElementById('signupUidInput').value.trim();
              const refCode = elements.signupReferralCodeInput.value.trim(); // <<< Get Referral Code
 
              if (!em || !pw || !cpw) { showStatusMessage(elements.signupStatusMessage, 'Fill required fields.', 'warning'); return; }
              if (pw !== cpw) { showStatusMessage(elements.signupStatusMessage, 'Passwords don\'t match.', 'warning'); return; }
              if (pw.length < 6) { showStatusMessage(elements.signupStatusMessage, 'Password min 6 chars.', 'warning'); return; }
+             if (!uid) {
+                 showStatus(elements.signupStatusMessage, 'Please enter your Free Fire UID.', 'warning');
+                 return;
+                }
+                if (!/^\d{8,15}$/.test(uid)) {
+                 showStatus(elements.signupStatusMessage, 'Invalid UID. Enter 8-15 digits only.', 'warning');
+                 return;
+                }
 
              showLoader(true); clearStatusMessage(elements.signupStatusMessage);
              validReferrerUid = null; // Reset potential referrer
@@ -542,7 +556,7 @@
                              uid: user.uid, displayName: user.displayName || user.email?.split('@')[0] || 'User', email: user.email || null, photoURL: user.photoURL || null,
                              balance: appSettings.newUserBalance || 0, winningCash: 0, bonusCash: appSettings.newUserBonus || 0,
                              totalMatches: 0, wonMatches: 0, totalEarnings: 0, referralEarnings: 0, createdAt: Date.now(),
-                             referralCode: generateReferralCode(), joinedTournaments: {}, isAdmin: false,
+                             referralCode: generateReferralCode(), joinedTournaments: {}, isAdmin: false, freeFireUid: uid,
                              // <<< Add referredBy field if valid referrer was found during signup >>>
                              ...(localReferrerUid && { referredBy: localReferrerUid })
                          };

@@ -329,9 +329,46 @@
                 </div>
             </section>
 
-            <!-- Transactions Section -->
-            <section id="transactions-section" class="section card"> <div class="card-body"> <h2 class="card-title">User Transactions</h2> <p class="text-muted">Section under development.</p></div> </section>
-
+            <!-- Transactions Section (Deposits) -->
+<section id="transactions-section" class="section">
+    <h2>Deposit Requests</h2>
+    <div id="depositsStatus" class="mb-3"></div>
+    <div class="card">
+        <div class="card-header bg-secondary border-bottom border-dark">
+            <ul class="nav nav-tabs card-header-tabs" id="depositTabs" role="tablist">
+                <li class="nav-item"><button class="nav-link active" id="deposit-pending-tab" data-bs-toggle="tab" data-bs-target="#pendingDepositsTab">Pending</button></li>
+                <li class="nav-item"><button class="nav-link" id="deposit-completed-tab" data-bs-toggle="tab" data-bs-target="#completedDepositsTab">Completed</button></li>
+                <li class="nav-item"><button class="nav-link" id="deposit-rejected-tab" data-bs-toggle="tab" data-bs-target="#rejectedDepositsTab">Rejected</button></li>
+            </ul>
+        </div>
+        <div class="card-body tab-content p-0">
+            <div class="tab-pane fade show active" id="pendingDepositsTab">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead><tr><th>Requested At</th><th>User</th><th>Amount</th><th>Transaction ID</th><th>Actions</th></tr></thead>
+                        <tbody id="pendingDepositsTableBody"><tr><td colspan="5" class="text-center p-3 text-muted">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="completedDepositsTab">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead><tr><th>Requested At</th><th>Processed At</th><th>User</th><th>Amount</th><th>Admin Note</th></tr></thead>
+                        <tbody id="completedDepositsTableBody"><tr><td colspan="5" class="text-center p-3 text-muted">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="rejectedDepositsTab">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead><tr><th>Requested At</th><th>Processed At</th><th>User</th><th>Amount</th><th>Reason</th></tr></thead>
+                        <tbody id="rejectedDepositsTableBody"><tr><td colspan="5" class="text-center p-3 text-muted">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
             <!-- Withdrawals Section -->
             <section id="withdrawals-section" class="section">
                 <h2>Manage Withdrawals</h2>
@@ -634,6 +671,7 @@
              statFinishedTournaments: getElement('statFinishedTournaments'), // New
              dashboardStatus: getElement('dashboardStatus'),
              pendingWithdrawalCountBadge: getElement('pendingWithdrawalCountBadge'),
+             pendingDepositCountBadge: getElement('pendingDepositCountBadge'),
              // Games (Modal elements consolidated)
              gamesTableBody: getElement('gamesTableBody'),
              gameModalEl: getElement('gameModal'), // Renamed modal ID
@@ -1005,8 +1043,10 @@
                  case 'settings-section': loadSettings(); break;
                  case 'theme-section': loadThemeSettings(); break; // Load theme data
                  case 'transactions-section':
-                     if (elements.transactionsSection) elements.transactionsSection.innerHTML = '<div class="card-body"><h2 class="card-title">User Transactions</h2><p class="text-muted">Section under development.</p></div>';
-                     break;
+                   loadDeposits('pending');
+                   loadDeposits('completed');
+                   loadDeposits('rejected');
+                   break;
                  default: console.warn("Unknown section requested:", sectionId); showStatus(elements.dashboardStatus, `Unknown section requested: ${sectionId}`, "warning");
              }
          }
@@ -1428,7 +1468,104 @@
              });
               console.log(`Attached new listener for ${status} withdrawals.`);
          }
+        
+               // ========== DEPOSITS FUNCTIONS ==========
+async function loadDeposits(status = 'pending') {
+    if (!db || !isDesignatedAdmin(currentAdminUser)) return;
+    const targetTableBody = document.getElementById(`${status}DepositsTableBody`);
+    if (!targetTableBody) return;
 
+    const q = query(ref(db, 'deposits'), orderByChild('status'), equalTo(status));
+    targetTableBody.innerHTML = '<tr><td colspan="5" class="text-center p-3"><div class="spinner-border spinner-border-sm"></div></td></tr>';
+
+    try {
+        const snapshot = await get(q);
+        let tableHtml = '';
+        let count = 0;
+
+        if (snapshot.exists()) {
+            count = snapshot.size;
+            const deposits = [];
+            snapshot.forEach(child => deposits.push({ id: child.key, ...child.val() }));
+            deposits.sort((a, b) => (b.requestedAt || 0) - (a.requestedAt || 0));
+
+            deposits.forEach(d => {
+                const userDisplay = `${sanitizeHTML(d.userName || 'User')} (<small>${sanitizeHTML(d.userEmail)}</small>)`;
+                const requestTime = formatDate(d.requestedAt);
+                const processedTime = formatDate(d.processedAt);
+
+                let rowHtml = `<tr><td>${requestTime}</td>`;
+                if (status !== 'pending') rowHtml += `<td>${processedTime}</td>`;
+                rowHtml += `<td>${userDisplay}</td><td>₹${d.amount}</td>`;
+
+                if (status === 'pending') {
+                    rowHtml += `
+                        <td><strong class="text-warning">${sanitizeHTML(d.transactionId)}</strong></td>
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-success btn-approve-deposit" data-id="${d.id}" data-userid="${d.userId}"><i class="bi bi-check-circle"></i> Approve</button>
+                            <button class="btn btn-sm btn-danger btn-reject-deposit" data-id="${d.id}" data-userid="${d.userId}"><i class="bi bi-x-circle"></i> Reject</button>
+                        </td>
+                    `;
+                } else if (status === 'completed') {
+                    rowHtml += `<td><small>${sanitizeHTML(d.adminNote || 'Approved')}</small></td>`;
+                } else if (status === 'rejected') {
+                    rowHtml += `<td><small class="text-danger">${sanitizeHTML(d.rejectReason || 'No reason')}</small></td>`;
+                }
+                rowHtml += `</tr>`;
+                tableHtml += rowHtml;
+            });
+        }
+
+        const emptyColspan = status === 'pending' ? 5 : 4;
+        targetTableBody.innerHTML = tableHtml || `<tr><td colspan="${emptyColspan}" class="text-center p-3 text-muted">No ${status} deposits.</td></tr>`;
+
+        if (status === 'pending' && document.getElementById('pendingDepositCountBadge')) {
+            document.getElementById('pendingDepositCountBadge').textContent = count;
+            document.getElementById('pendingDepositCountBadge').style.display = count > 0 ? 'inline-block' : 'none';
+        }
+
+    } catch (error) {
+        console.error('Deposits error:', error);
+        targetTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-3 text-danger">Error: ${error.message}</td></tr>`;
+    }
+}
+
+         // ========== DEPOSIT ACTION HANDLERS ==========
+async function handleApproveDeposit(depositId, userId) {
+    if (!confirm('Mark this deposit as COMPLETED?\n\nNote: Add balance to user wallet manually from Users section first.')) return;
+    
+    try {
+        await update(ref(db, `deposits/${depositId}`), {
+            status: 'completed',
+            processedAt: Date.now(),
+            adminNote: 'Completed - Balance added manually by admin'
+        });
+        alert('✅ Deposit marked as completed!');
+        loadDeposits('pending');
+        loadDeposits('completed');
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+async function handleRejectDeposit(depositId, userId) {
+    const reason = prompt('Reason for rejection:');
+    if (reason === null) return;
+    
+    try {
+        await update(ref(db, `deposits/${depositId}`), {
+            status: 'rejected',
+            processedAt: Date.now(),
+            rejectReason: reason || 'No reason provided'
+        });
+        alert('❌ Deposit rejected!');
+        loadDeposits('pending');
+        loadDeposits('rejected');
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+        
         async function loadSettings() {
              if (!db || !isDesignatedAdmin(currentAdminUser)) return;
              console.log("Loading settings...");
@@ -1941,6 +2078,18 @@
                     }
                 }
             });
+
+            // Deposit action buttons - delegated
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-id]');
+    if (!btn) return;
+
+    if (btn.classList.contains('btn-approve-deposit')) {
+        handleApproveDeposit(btn.dataset.id, btn.dataset.userid);
+    } else if (btn.classList.contains('btn-reject-deposit')) {
+        handleRejectDeposit(btn.dataset.id, btn.dataset.userid);
+    }
+});
             
             // Delegated Event Listener for table actions and copy buttons
             document.body.addEventListener('click', (event) => {

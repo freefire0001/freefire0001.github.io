@@ -352,7 +352,7 @@
          const elements = {
              sections: querySelAll('.section'), bottomNavItems: querySelAll('.bottom-nav .nav-item'), globalLoader: getElement('globalLoaderEl'),
              headerBackBtn: getElement('headerBackBtnEl'), headerTitleContainer: getElement('headerTitleContainerEl'), headerGameTitle: getElement('headerGameTitleEl'), headerWalletChip: getElement('headerWalletChipEl'), headerChipBalance: getElement('headerChipBalanceEl'), headerUserGreeting: getElement('headerUserGreetingEl'), appLogo: getElement('appLogoEl'), notificationBtn: getElement('notificationBtnEl'), notificationBadge: querySel('.notification-badge'),
-             loginSection: getElement('login-section'),
+             loginSection: getElement('login-section'), editIgnBtn: getElement('editIgnBtn'), editIgnModal: getElement('editIgnModal'), editIgnInput: getElement('editIgnInput'), saveIgnBtn: getElement('saveIgnBtn'), editIgnStatus: getElement('editIgnStatus'),
              // Login Form Elements
              emailLoginForm: getElement('emailLoginForm'),
              loginEmailInput: getElement('loginEmailInputEl'),
@@ -1556,6 +1556,50 @@ elements.submitDepositBtn?.addEventListener('click', async function() {
         btn.innerHTML = 'Submit Request';
     }
   });
+
+    // ===== EDIT IGN =====
+elements.editIgnBtn?.addEventListener('click', function() {
+    if (!currentUser) {
+        alert('Please login first.');
+        return;
+    }
+    elements.editIgnInput.value = userProfile.ign || '';
+    clearStatusMessage(elements.editIgnStatus);
+    const modal = new bootstrap.Modal(elements.editIgnModal);
+    modal.show();
+});
+
+elements.saveIgnBtn?.addEventListener('click', async function() {
+    const ign = elements.editIgnInput.value.trim();
+    const statusEl = elements.editIgnStatus;
+    clearStatusMessage(statusEl);
+
+    if (!ign) {
+        showStatusMessage(statusEl, 'Please enter your In-Game Name.', 'warning');
+        return;
+    }
+
+    const btn = elements.saveIgnBtn;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+    try {
+        await update(ref(db, `users/${currentUser.uid}`), { ign: ign, updatedAt: Date.now() });
+        userProfile.ign = ign;
+        populateUserInfo(currentUser, userProfile);
+        showStatusMessage(statusEl, '✅ IGN updated successfully!', 'success');
+        setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(elements.editIgnModal);
+            if (modal) modal.hide();
+        }, 1500);
+    } catch (error) {
+        console.error('IGN update error:', error);
+        showStatusMessage(statusEl, '❌ Failed to update IGN: ' + error.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Save Changes';
+    }
+}); 
      
      // Other Actions
      elements.notificationBtn?.addEventListener('click', () => alert('Notifications coming soon!'));

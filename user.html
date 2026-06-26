@@ -553,6 +553,7 @@
              const refCode = elements.signupReferralCodeInput.value.trim(); // <<< Get Referral Code
              // IGN Validation
              const ign = document.getElementById('signupIgnInput').value.trim();
+             window._pendingIgn = ign;
              
              if (!ign) { showStatus(elements.signupStatusMessage, 'Please enter your In-Game Name.', 'warning'); return; }
              if (!em || !pw || !cpw) { showStatusMessage(elements.signupStatusMessage, 'Fill required fields.', 'warning'); return; }
@@ -631,7 +632,10 @@
              showLoader(true); detachAllDbListeners(); currentUser = user;
              const localReferrerUid = validReferrerUid; // Capture the value before resetting
              validReferrerUid = null; // Reset for next signup attempt
-
+            // Receive IGN from temporary storage
+             const localIgn = window._pendingIgn || '';
+             window._pendingIgn = '';   // Clear after use
+             
              if (user) { // Logged In
                  console.log("Auth State: Logged In", user.uid); const userRef = ref(db, 'users/' + user.uid);
                  try {
@@ -647,7 +651,7 @@
                              uid: user.uid, displayName: user.displayName || user.email?.split('@')[0] || 'User', email: user.email || null, photoURL: user.photoURL || null,
                              balance: appSettings.newUserBalance || 0, winningCash: 0, bonusCash: appSettings.newUserBonus || 0,
                              totalMatches: 0, wonMatches: 0, totalEarnings: 0, referralEarnings: 0, createdAt: Date.now(),
-                             referralCode: generateReferralCode(), joinedTournaments: {}, isAdmin: false, ign: ign,   // ✅ Add this line
+                             referralCode: generateReferralCode(), joinedTournaments: {}, isAdmin: false, ign: localIgn,   // ✅ Add this line
                              // <<< Add referredBy field if valid referrer was found during signup >>>
                              ...(localReferrerUid && { referredBy: localReferrerUid })
                          };
